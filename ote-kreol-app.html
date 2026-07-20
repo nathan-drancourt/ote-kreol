@@ -1,0 +1,1950 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oté ! Kréol — apprendre le créole réunionnais</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green:#58CC02;  --green-d:#46A302;  --green-l:#D7FFB8;
+    --blue:#1CB0F6;   --blue-d:#1899D6;   --blue-l:#DDF4FF;
+    --red:#FF4B4B;    --red-d:#E03B3B;    --red-l:#FFDFE0;
+    --gold:#FFC800;   --gold-d:#E6A800;
+    --purple:#CE82FF; --purple-d:#A560E8;
+    --orange:#FF9600; --orange-d:#E08600;
+    --gray:#E5E5E5;   --gray-d:#CFCFCF;
+    --ink:#3C3C3C;    --muted:#777;
+    --line:#E5E5E5;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+  body{ font-family:'Nunito',system-ui,sans-serif; font-weight:700; color:var(--ink); background:#fff; min-height:100vh; }
+  button{ font-family:inherit; font-weight:inherit; cursor:pointer; }
+  :focus-visible{ outline:3px solid var(--blue); outline-offset:2px; border-radius:8px; }
+  h1,h2,h3{ font-weight:900; }
+
+  /* ============ Barre du haut ============ */
+  .statbar{ position:sticky; top:0; z-index:20; background:#fff; border-bottom:2px solid var(--line); }
+  .statbar-in{ max-width:600px; margin:0 auto; padding:10px 16px;
+    display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .logo{ font-weight:900; font-size:1.2rem; color:var(--green); letter-spacing:-.5px; }
+  .logo em{ font-style:normal; color:var(--gold); }
+  .stats-right{ display:flex; align-items:center; gap:14px; font-weight:900; font-size:1rem; }
+  .stat.streak{ color:var(--orange); } .stat.xp{ color:var(--gold-d); }
+  .iconbtn{ background:none; border:none; font-size:1.15rem; }
+  body.in-lesson .statbar, body.in-lesson .tabbar{ display:none; }
+
+  main{ max-width:600px; margin:0 auto; padding:16px 16px 110px; }
+
+  /* ============ Onglets du bas ============ */
+  .tabbar{ position:fixed; left:0; right:0; bottom:0; z-index:25;
+    background:#fff; border-top:2px solid var(--line); }
+  .tabbar-in{ max-width:600px; margin:0 auto; display:flex; }
+  .tab{ flex:1; background:none; border:none; padding:9px 4px 10px;
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+    font-size:.66rem; font-weight:900; letter-spacing:.04em; color:#AFAFAF; text-transform:uppercase; }
+  .tab .ti{ font-size:1.35rem; }
+  .tab.active{ color:var(--blue); }
+  .tab.active .ti{ transform:scale(1.12); }
+
+  /* ============ Cartes génériques ============ */
+  .card{ border:2px solid var(--line); border-radius:16px; padding:16px; margin-bottom:14px; background:#fff; }
+  .card h3{ font-size:1.05rem; margin-bottom:8px; }
+  .soft{ color:var(--muted); font-weight:700; font-size:.9rem; }
+
+  .goal-card{ display:flex; align-items:center; gap:14px; }
+  .goal-card .g-ic{ font-size:1.8rem; }
+  .goal-card .g-body{ flex:1; }
+  .gbar{ height:12px; background:var(--gray); border-radius:99px; overflow:hidden; margin-top:6px; }
+  .gbar span{ display:block; height:100%; background:var(--gold); border-radius:99px; transition:width .4s; }
+
+  .mascot-hello{ display:flex; gap:12px; align-items:center; margin:6px 0 16px;
+    background:#F7F7F7; border:2px solid var(--line); border-radius:16px; padding:12px 16px; }
+  .mascot-hello .m{ font-size:2.1rem; }
+  .mascot-hello p{ font-size:.92rem; }
+
+  /* ============ Parcours ============ */
+  .sec-banner{ background:var(--sc); color:#fff; border-radius:18px; padding:18px 20px; margin:30px 0 6px;
+    box-shadow:0 5px 0 var(--sd); }
+  .sec-banner .s-eyebrow{ font-size:.7rem; letter-spacing:.16em; opacity:.85; font-weight:900; }
+  .sec-banner h2{ font-size:1.5rem; }
+  .sec-banner .s-fr{ font-size:.9rem; opacity:.9; }
+
+  .unit-banner{ background:var(--uc); color:#fff; border-radius:14px; padding:12px 18px; margin:22px 0 4px;
+    box-shadow:0 4px 0 var(--ud); display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  .unit-banner h2{ font-size:1.15rem; }
+  .unit-banner .u-fr{ font-size:.84rem; opacity:.9; }
+  .unit-banner .u-emoji{ font-size:1.7rem; }
+
+  .path-seg{ display:flex; flex-direction:column; align-items:center; padding:12px 0 2px; }
+  .node-wrap{ position:relative; margin:13px 0; }
+  .node{ width:70px; height:70px; border-radius:50%; border:none; color:#fff; font-size:1.6rem;
+    background:var(--uc); box-shadow:0 7px 0 var(--ud);
+    display:flex; align-items:center; justify-content:center; transition:transform .1s; }
+  .node:active{ transform:translateY(4px); box-shadow:0 3px 0 var(--ud); }
+  .node.locked{ background:var(--gray); box-shadow:0 7px 0 var(--gray-d); color:#AFAFAF; cursor:not-allowed; }
+  .node.done::after{ content:"✓"; position:absolute; right:-4px; top:-4px;
+    background:var(--gold); color:#fff; font-size:.8rem; font-weight:900; width:24px; height:24px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; box-shadow:0 2px 0 var(--gold-d); }
+  .node.current{ animation:breathe 1.6s ease-in-out infinite; }
+  .start-bubble{ position:absolute; left:50%; transform:translateX(-50%); top:-42px;
+    background:#fff; border:2px solid var(--line); border-radius:12px; padding:5px 12px;
+    font-weight:900; font-size:.76rem; letter-spacing:.1em; color:var(--uc); white-space:nowrap;
+    animation:hop 1.2s ease-in-out infinite; z-index:2; }
+  .start-bubble::after{ content:""; position:absolute; left:50%; bottom:-7px; transform:translateX(-50%) rotate(45deg);
+    width:12px; height:12px; background:#fff; border-right:2px solid var(--line); border-bottom:2px solid var(--line); }
+  .node-label{ text-align:center; font-size:.78rem; color:var(--muted); margin-top:7px; font-weight:800; }
+  @keyframes hop{ 0%,100%{ transform:translateX(-50%) translateY(0);} 50%{ transform:translateX(-50%) translateY(-5px);} }
+  @keyframes breathe{ 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.05);} }
+
+  /* ============ Leçon / session ============ */
+  .lesson-top{ display:flex; align-items:center; gap:14px; max-width:600px; margin:0 auto; padding:16px 16px 6px; }
+  .xbtn{ background:none; border:none; font-size:1.35rem; color:#AFAFAF; font-weight:900; }
+  .xbtn:hover{ color:var(--ink); }
+  .ltrack{ flex:1; height:16px; background:var(--gray); border-radius:99px; overflow:hidden; }
+  .ltrack span{ display:block; height:100%; width:0%; background:var(--green); border-radius:99px; position:relative; transition:width .35s; }
+  .ltrack span::after{ content:""; position:absolute; left:8px; right:8px; top:4px; height:4px;
+    background:rgba(255,255,255,.35); border-radius:99px; }
+  .hearts{ font-size:1rem; letter-spacing:2px; white-space:nowrap; }
+  .hearts .lost{ filter:grayscale(1); opacity:.3; }
+  .timer{ font-weight:900; font-size:1.1rem; color:var(--orange); min-width:52px; text-align:right; }
+
+  .ex-area{ max-width:600px; margin:0 auto; padding:16px 16px 180px; }
+  .ex-title{ font-size:1.35rem; margin-bottom:16px; }
+
+  .speech{ display:flex; align-items:flex-end; gap:10px; margin-bottom:20px; }
+  .speech .m{ font-size:2.3rem; line-height:1; }
+  .bubble{ border:2px solid var(--line); border-radius:14px; padding:10px 14px;
+    font-size:1.12rem; font-weight:800; position:relative; background:#fff; }
+  .bubble::after{ content:""; position:absolute; left:-8px; bottom:12px; width:12px; height:12px;
+    background:#fff; border-left:2px solid var(--line); border-bottom:2px solid var(--line); transform:rotate(45deg); }
+  .bubble .sub{ display:block; font-size:.85rem; color:var(--muted); font-weight:700; margin-top:2px; }
+
+  .bigplay{ display:block; margin:8px auto 26px; width:96px; height:96px; border-radius:26px;
+    border:none; background:var(--blue); box-shadow:0 6px 0 var(--blue-d);
+    color:#fff; font-size:2.4rem; }
+  .bigplay:active{ transform:translateY(3px); box-shadow:0 3px 0 var(--blue-d); }
+  .minisay{ background:none; border:none; font-size:1.1rem; padding:0 4px; }
+
+  .options{ display:grid; gap:10px; }
+  .option{ text-align:left; background:#fff; border:2px solid var(--line); border-radius:14px;
+    box-shadow:0 3px 0 var(--line); padding:12px 14px; font-size:1.02rem; font-weight:700; color:var(--ink);
+    display:flex; align-items:center; gap:12px; transition:border-color .12s, background .12s; }
+  .option .okey{ width:26px; height:26px; border-radius:8px; border:2px solid var(--line);
+    display:flex; align-items:center; justify-content:center; font-size:.78rem; color:var(--muted); flex:none; }
+  .option:hover:not(:disabled){ background:#F7F7F7; }
+  .option.selected{ border-color:#84D8FF; background:var(--blue-l); box-shadow:0 3px 0 #84D8FF; color:var(--blue-d); }
+  .option.selected .okey{ border-color:#84D8FF; color:var(--blue-d); }
+  .option.right{ border-color:var(--green); background:var(--green-l); box-shadow:0 3px 0 var(--green); color:var(--green-d); }
+  .option.wrongsel{ border-color:var(--red); background:var(--red-l); box-shadow:0 3px 0 var(--red); color:var(--red-d); }
+  .option:disabled{ cursor:default; }
+
+  .fillline{ font-size:1.3rem; font-weight:900; text-align:center; margin:6px 0 4px; line-height:1.6; }
+  .fillline .gap{ display:inline-block; min-width:70px; border-bottom:3px solid var(--ink); margin:0 4px; color:var(--blue-d); }
+  .fillhint{ text-align:center; color:var(--muted); font-size:.92rem; margin-bottom:20px; }
+
+  .answerline{ min-height:56px; border-top:2px solid var(--line); border-bottom:2px solid var(--line);
+    display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:8px 2px; margin-bottom:20px; }
+  .tilebank{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+  .tile{ background:#fff; border:2px solid var(--line); border-radius:12px; box-shadow:0 3px 0 var(--line);
+    padding:9px 14px; font-size:1rem; font-weight:800; color:var(--ink); }
+  .tile:active{ transform:translateY(2px); box-shadow:0 1px 0 var(--line); }
+  .tile.ghost{ opacity:0; pointer-events:none; }
+
+  .match{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .mcol{ display:grid; gap:10px; align-content:start; }
+  .mbtn{ background:#fff; border:2px solid var(--line); border-radius:14px; box-shadow:0 3px 0 var(--line);
+    padding:13px 10px; font-size:.98rem; font-weight:800; color:var(--ink); }
+  .mbtn.selected{ border-color:#84D8FF; background:var(--blue-l); color:var(--blue-d); box-shadow:0 3px 0 #84D8FF; }
+  .mbtn.matched{ border-color:var(--green); background:var(--green-l); color:var(--green-d); opacity:.55; cursor:default; box-shadow:none; }
+  .mbtn.shake{ animation:shake .3s; border-color:var(--red); background:var(--red-l); }
+  @keyframes shake{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-5px);} 75%{transform:translateX(5px);} }
+
+  .tinput{ width:100%; font-family:inherit; font-size:1.12rem; font-weight:700;
+    border:2px solid var(--line); border-radius:14px; padding:14px; background:#F7F7F7; color:var(--ink); }
+  .tinput:focus{ outline:none; border-color:var(--blue); background:#fff; }
+
+  .tipcard{ max-width:600px; margin:0 auto; padding:20px 16px 40px; }
+  .tipbox{ border:2px solid var(--purple); border-radius:18px; overflow:hidden; margin-bottom:20px; }
+  .tipbox .tiphead{ background:var(--purple); color:#fff; padding:12px 16px; font-weight:900; }
+  .tipbox .tipbody{ padding:16px; }
+  .tipbody p{ margin-bottom:10px; font-weight:700; }
+  .tipbody .ex{ background:#F7F1FF; border-radius:10px; padding:8px 12px; margin:6px 0; font-weight:800; }
+  .tipbody .ex i{ display:block; color:var(--muted); font-weight:700; font-style:normal; font-size:.88rem; }
+
+  /* ============ Barre de vérification ============ */
+  .checkbar{ position:fixed; left:0; right:0; bottom:0; z-index:30; background:#fff; border-top:2px solid var(--line); padding:14px 16px; }
+  .checkbar.ok{ background:var(--green-l); border-color:#A8E063; }
+  .checkbar.ko{ background:var(--red-l); border-color:#F5B1B1; }
+  .checkbar-in{ max-width:600px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+  .fb{ display:flex; align-items:center; gap:12px; min-height:44px; }
+  .fb-ic{ width:44px; height:44px; border-radius:50%; background:#fff; flex:none;
+    display:flex; align-items:center; justify-content:center; font-size:1.35rem; font-weight:900; }
+  .ok .fb-ic{ color:var(--green-d); } .ko .fb-ic{ color:var(--red-d); }
+  .fb-t{ font-weight:900; font-size:1.06rem; }
+  .ok .fb-t, .ok .fb-s{ color:var(--green-d); } .ko .fb-t, .ko .fb-s{ color:var(--red-d); }
+  .fb-s{ font-size:.92rem; font-weight:700; }
+
+  .btn-duo{ border:none; border-radius:14px; padding:13px 24px; font-size:.92rem; font-weight:900;
+    letter-spacing:.08em; text-transform:uppercase; color:#fff; background:var(--green);
+    box-shadow:0 4px 0 var(--green-d); transition:filter .12s; }
+  .btn-duo:hover:not(:disabled){ filter:brightness(1.06); }
+  .btn-duo:active:not(:disabled){ transform:translateY(2px); box-shadow:0 2px 0 var(--green-d); }
+  .btn-duo:disabled{ background:var(--gray); box-shadow:0 4px 0 var(--gray-d); color:#AFAFAF; cursor:not-allowed; }
+  .btn-duo.red{ background:var(--red); box-shadow:0 4px 0 var(--red-d); }
+  .btn-duo.blue{ background:var(--blue); box-shadow:0 4px 0 var(--blue-d); }
+  .btn-duo.white{ background:#fff; color:var(--blue); box-shadow:0 4px 0 var(--line); border:2px solid var(--line); }
+  .btn-duo.wide{ display:block; width:100%; }
+
+  /* ============ Écrans / modales ============ */
+  .center-screen{ max-width:600px; margin:0 auto; padding:50px 20px; text-align:center; }
+  .center-screen .m-big{ font-size:4.2rem; animation:pop .45s; }
+  @keyframes pop{ 0%{ transform:scale(.4); opacity:0;} 100%{ transform:scale(1); opacity:1;} }
+  .cheer{ font-size:1.1rem; font-weight:900; color:var(--gold-d); margin-top:6px; }
+  .center-screen h2{ font-size:1.7rem; margin:8px 0 22px; }
+  .rescards{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:26px; }
+  .rescard{ border:2px solid var(--rc); border-radius:16px; overflow:hidden; min-width:112px; }
+  .rescard span{ display:block; background:var(--rc); color:#fff; font-size:.68rem; font-weight:900; letter-spacing:.1em; padding:5px 10px; }
+  .rescard b{ display:block; font-size:1.4rem; font-weight:900; padding:11px 10px; color:var(--rc); }
+  .newbadges{ margin:-8px 0 22px; display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
+  .badgechip{ background:#FFF6DA; border:2px solid var(--gold); color:var(--gold-d);
+    border-radius:99px; padding:6px 14px; font-weight:900; font-size:.88rem; }
+
+  .overlay{ position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:50;
+    display:flex; align-items:center; justify-content:center; padding:20px; }
+  .modal{ background:#fff; border-radius:20px; padding:26px 22px; max-width:380px; width:100%; text-align:center; }
+  .modal .m{ font-size:2.8rem; }
+  .modal h3{ font-size:1.25rem; margin:10px 0 6px; }
+  .modal p{ color:var(--muted); font-size:.92rem; margin-bottom:18px; font-weight:700; }
+  .modal .btns{ display:flex; flex-direction:column; gap:12px; }
+
+  /* ============ Entraînement ============ */
+  .train-card{ display:flex; align-items:center; gap:14px; width:100%; text-align:left;
+    border:2px solid var(--line); border-radius:16px; background:#fff; box-shadow:0 3px 0 var(--line);
+    padding:14px 16px; margin-bottom:12px; }
+  .train-card:active{ transform:translateY(2px); box-shadow:0 1px 0 var(--line); }
+  .train-card .t-ic{ font-size:1.9rem; }
+  .train-card .t-body{ flex:1; }
+  .train-card h3{ font-size:1.02rem; }
+  .train-card .due{ background:var(--red); color:#fff; border-radius:99px; font-size:.75rem;
+    font-weight:900; padding:3px 10px; }
+  .train-card:disabled{ opacity:.5; box-shadow:0 3px 0 var(--line); cursor:not-allowed; }
+
+  /* ============ Dico ============ */
+  .search{ width:100%; font-family:inherit; font-weight:700; font-size:1rem;
+    border:2px solid var(--line); border-radius:14px; padding:12px 14px; background:#F7F7F7; margin-bottom:14px; }
+  .search:focus{ outline:none; border-color:var(--blue); background:#fff; }
+  .dic-unit{ margin:18px 0 6px; font-size:.78rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); font-weight:900; }
+  .dic-row{ display:flex; gap:10px; align-items:flex-start; padding:10px 4px; border-bottom:2px solid #F0F0F0; }
+  .dic-row .d-kr{ font-weight:900; font-size:1.02rem; }
+  .dic-row .d-fr{ color:var(--muted); font-size:.9rem; font-weight:700; }
+  .dic-row .d-ex{ color:#9a9a9a; font-size:.84rem; font-weight:600; font-style:italic; }
+  .dots{ display:inline-flex; gap:3px; margin-left:8px; vertical-align:middle; }
+  .dots i{ width:7px; height:7px; border-radius:50%; background:var(--gray); }
+  .dots i.on{ background:var(--green); }
+
+  /* ============ Grammaire ============ */
+  .gram-card{ border:2px solid var(--line); border-radius:16px; margin-bottom:14px; overflow:hidden; }
+  .gram-card > button{ width:100%; text-align:left; background:#fff; border:none; padding:14px 16px;
+    font-size:1rem; font-weight:900; display:flex; justify-content:space-between; align-items:center; }
+  .gram-card .g-body{ padding:0 16px 16px; display:none; }
+  .gram-card.open .g-body{ display:block; }
+  .gram-card table{ width:100%; border-collapse:collapse; margin:8px 0; font-size:.92rem; }
+  .gram-card td{ border:2px solid #F0F0F0; padding:7px 9px; }
+  .gram-card td:first-child{ font-weight:900; color:var(--blue-d); white-space:nowrap; }
+  .gram-card p{ font-weight:700; font-size:.92rem; margin:8px 0; }
+  .gram-card .ex{ background:#F3FAF3; border-radius:10px; padding:7px 11px; margin:6px 0; font-weight:800; font-size:.94rem; }
+  .gram-card .ex i{ display:block; color:var(--muted); font-weight:700; font-style:normal; font-size:.84rem; }
+
+  /* ============ Profil ============ */
+  .prof-head{ display:flex; gap:14px; align-items:center; margin-bottom:16px; }
+  .prof-head .av{ font-size:3rem; background:#F1FBE9; border:2px solid var(--green); border-radius:20px;
+    width:76px; height:76px; display:flex; align-items:center; justify-content:center; }
+  .prof-head h2{ font-size:1.3rem; }
+  .lvlbar{ height:12px; background:var(--gray); border-radius:99px; overflow:hidden; margin-top:6px; }
+  .lvlbar span{ display:block; height:100%; background:var(--blue); border-radius:99px; }
+  .statgrid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:10px; margin-bottom:16px; }
+  .statbox{ border:2px solid var(--line); border-radius:14px; padding:10px 12px; }
+  .statbox b{ display:block; font-size:1.25rem; font-weight:900; }
+  .statbox span{ font-size:.74rem; color:var(--muted); font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
+  .badges{ display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:10px; }
+  .badge{ border:2px solid var(--gold); background:#FFFBEB; border-radius:14px; padding:10px 8px; text-align:center; }
+  .badge .b-e{ font-size:1.7rem; }
+  .badge .b-n{ font-size:.78rem; font-weight:900; margin-top:2px; }
+  .badge .b-d{ font-size:.68rem; color:var(--muted); font-weight:700; }
+  .badge.locked{ border-color:var(--line); background:#FAFAFA; filter:grayscale(1); opacity:.6; }
+  .setrow{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 0; border-bottom:2px solid #F0F0F0; }
+  .setrow label{ font-weight:800; font-size:.95rem; }
+  .setrow select{ font-family:inherit; font-weight:800; border:2px solid var(--line); border-radius:10px; padding:6px 10px; }
+  .switch{ border:none; border-radius:99px; width:52px; height:30px; background:var(--gray); position:relative; transition:background .15s; }
+  .switch::after{ content:""; position:absolute; top:3px; left:3px; width:24px; height:24px; border-radius:50%; background:#fff; transition:left .15s; }
+  .switch.on{ background:var(--green); }
+  .switch.on::after{ left:25px; }
+
+  #savepill{ position:fixed; left:12px; bottom:96px; z-index:70;
+    background:#fff; border:2px solid var(--line); border-radius:99px; padding:4px 12px;
+    font-size:.74rem; font-weight:900; color:var(--green-d);
+    opacity:0; transform:translateY(6px); transition:opacity .25s, transform .25s; pointer-events:none; }
+  #savepill.show{ opacity:1; transform:translateY(0); }
+
+  footer{ text-align:center; color:#AFAFAF; font-size:.78rem; padding:8px 16px 100px; }
+
+  @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body>
+
+<div class="statbar">
+  <div class="statbar-in">
+    <span class="logo">Oté<em> !</em> Kréol</span>
+    <div class="stats-right">
+      <span class="stat streak" title="Série de jours">🔥 <b id="st-streak">0</b></span>
+      <span class="stat xp" title="Points d’expérience">⚡ <b id="st-xp">0</b></span>
+      <button id="soundbtn" class="iconbtn" aria-label="Activer ou couper les effets sonores">🔊</button>
+    </div>
+  </div>
+</div>
+
+<main id="app"></main>
+
+<nav class="tabbar" aria-label="Navigation">
+  <div class="tabbar-in">
+    <button class="tab active" data-tab="path"><span class="ti">🗺️</span>Parcours</button>
+    <button class="tab" data-tab="train"><span class="ti">💪</span>Entraîn.</button>
+    <button class="tab" data-tab="dico"><span class="ti">📖</span>Dico</button>
+    <button class="tab" data-tab="gram"><span class="ti">📐</span>Gramèr</button>
+    <button class="tab" data-tab="prof"><span class="ti">🦎</span>Profil</button>
+  </div>
+</nav>
+
+<footer>Fé èk lo kèr 💚 pou La Rénion · l’orthographe du créole varie selon les graphies (Lékritir 77, KWZ, Tangol) : ici, une écriture phonétique courante.</footer>
+
+<script>
+/* ============================================================
+   Oté ! Kréol — application complète
+   Parcours (5 sections, 21 unités), grammaire, dictionnaire,
+   révision espacée, écoute, défi chrono, niveaux et badges.
+   ============================================================ */
+
+/* ---------------- helpers de données ---------------- */
+function U(id, nom, fr, emoji, color, dark, mots, coupe){
+  return { id, nom, fr, emoji, color, dark, lessons:[ mots.slice(0, coupe), mots.slice(coupe) ] };
+}
+
+/* ---------------- VOCABULAIRE ---------------- */
+const S1U = [
+  U("u1","Salitasion","Salutations","👋","#58CC02","#46A302",[
+    { fr:"Bonjour", kr:"Bonzour", ex:"Bonzour zot tout !", ext:"Bonjour à tous !" },
+    { fr:"Bonsoir", kr:"Bonswar" },
+    { fr:"Comment ça va ?", kr:"Koman i lé ?", ex:"Oté, koman i lé ?", ext:"Hé, comment ça va ?" },
+    { fr:"Ça va, ça va bien", kr:"Lé la", ex:"Lé la, mersi !", ext:"Ça va, merci !" },
+    { fr:"Merci", kr:"Mersi", ex:"Mersi in ta !", ext:"Merci beaucoup !" },
+    { fr:"S’il te plaît", kr:"Siouplé", ex:"In dolo, siouplé.", ext:"Une eau, s’il te plaît." },
+    { fr:"Au revoir", kr:"Nartrouv", ex:"Alé, nartrouv !", ext:"Allez, au revoir !" },
+    { fr:"À tout à l’heure", kr:"Nartrouv talèr" },
+    { fr:"Je m’appelle…", kr:"Mi apèl…", ex:"Mi apèl Maya.", ext:"Je m’appelle Maya." },
+    { fr:"Bienvenue", kr:"Bienvéni", ex:"Bienvéni La Rénion !", ext:"Bienvenue à La Réunion !" }
+  ],5),
+  U("u2","Mwin, ou, li…","Pronoms, être et avoir","🌿","#00CD9C","#00A87F",[
+    { fr:"Oui", kr:"Wi" },
+    { fr:"Je, moi", kr:"Mwin", ex:"Sa lé pou mwin.", ext:"C’est pour moi." },
+    { fr:"Tu, toi", kr:"Ou", ex:"Ou lé la ?", ext:"Tu es là ?" },
+    { fr:"Il, elle", kr:"Li" },
+    { fr:"Nous", kr:"Nou", ex:"Nou sava la plaz.", ext:"Nous allons à la plage." },
+    { fr:"Vous", kr:"Zot", ex:"Zot i koz kréol ?", ext:"Vous parlez créole ?" },
+    { fr:"Eux, elles", kr:"Banna", ex:"Banna la parti.", ext:"Ils sont partis." },
+    { fr:"Être (je suis, tu es…)", kr:"Lé", ex:"Mwin lé fatigué.", ext:"Je suis fatigué." },
+    { fr:"Avoir, il y a", kr:"Nana", ex:"Mwin nana dé frèr.", ext:"J’ai deux frères." },
+    { fr:"Ne pas avoir, il n’y a pas", kr:"Napwin", ex:"Napwin problèm !", ext:"Pas de problème !" }
+  ],5),
+  U("u3","Bann shif 1","Les nombres de 1 à 10","🔢","#1CB0F6","#1899D6",[
+    { fr:"Un", kr:"In", ex:"In kafé, siouplé.", ext:"Un café, s’il te plaît." },
+    { fr:"Deux", kr:"Dé" },
+    { fr:"Trois", kr:"Troi" },
+    { fr:"Quatre", kr:"Kat" },
+    { fr:"Cinq", kr:"Sink" },
+    { fr:"Six", kr:"Sis" },
+    { fr:"Sept", kr:"Sèt" },
+    { fr:"Huit", kr:"Uit" },
+    { fr:"Neuf", kr:"Nèf" },
+    { fr:"Dix", kr:"Dis", ex:"Dis marmay dann la kour !", ext:"Dix enfants dans la cour !" }
+  ],5),
+  U("u4","La famiy","La famille et les amis","🏡","#CE82FF","#A560E8",[
+    { fr:"Maman", kr:"Momon", ex:"Momon i apèl amwin.", ext:"Maman m’appelle." },
+    { fr:"Papa", kr:"Papa" },
+    { fr:"Enfant", kr:"Marmay", ex:"Bann marmay i zoué dann la kour.", ext:"Les enfants jouent dans la cour." },
+    { fr:"Bébé", kr:"Baba" },
+    { fr:"Grand-mère", kr:"Granmèr" },
+    { fr:"Personne âgée, ancien", kr:"Gramoun", ex:"Alon akout bann gramoun.", ext:"Écoutons les anciens." },
+    { fr:"Frère", kr:"Frèr" },
+    { fr:"Sœur", kr:"Sèr" },
+    { fr:"Homme", kr:"Zonm" },
+    { fr:"Femme", kr:"Fanm" },
+    { fr:"Ami, copain", kr:"Dalon", ex:"Mi sava èk mon dalon.", ext:"J’y vais avec mon copain." }
+  ],5)
+];
+
+const S2U = [
+  U("u5","Manzé é boir","Manger et boire","🍛","#FF9600","#E08600",[
+    { fr:"Manger", kr:"Manzé", ex:"Alon manzé !", ext:"À table !" },
+    { fr:"Boire", kr:"Boir" },
+    { fr:"L’eau", kr:"Dolo", ex:"In vèr dolo, siouplé.", ext:"Un verre d’eau, s’il te plaît." },
+    { fr:"Le riz", kr:"Ri" },
+    { fr:"Le cari", kr:"Kari", ex:"Kari poulé, lé bon mèm !", ext:"Le cari poulet, c’est trop bon !" },
+    { fr:"Le rougail", kr:"Rougay", ex:"In rougay sosis, siouplé !", ext:"Un rougail saucisses, s’il te plaît !" },
+    { fr:"Les grains (haricots, lentilles…)", kr:"Grin" },
+    { fr:"Le piment", kr:"Piman", ex:"Piman-la i pik !", ext:"Ce piment pique !" },
+    { fr:"Les achards", kr:"Zashar" },
+    { fr:"Le café", kr:"Kafé" },
+    { fr:"Le thé", kr:"Dité", ex:"In dité pèi, siouplé.", ext:"Un thé du pays, s’il te plaît." },
+    { fr:"Le gâteau", kr:"Gato" },
+    { fr:"C’est délicieux !", kr:"Lé bon mèm !" },
+    { fr:"Goûte ça !", kr:"Gout sa !" }
+  ],7),
+  U("u6","Lo tan i pas","Le temps qui passe","⏰","#00CD9C","#00A87F",[
+    { fr:"Aujourd’hui", kr:"Zordi", ex:"Zordi i fé sho !", ext:"Aujourd’hui il fait chaud !" },
+    { fr:"Demain", kr:"Domin" },
+    { fr:"Hier", kr:"Yèr" },
+    { fr:"Maintenant", kr:"Astèr" },
+    { fr:"Tout à l’heure", kr:"Talèr" },
+    { fr:"Le matin, tôt", kr:"Gramatin", ex:"Mi lèv gramatin.", ext:"Je me lève tôt le matin." },
+    { fr:"Le soir, ce soir", kr:"Aswar" },
+    { fr:"Tous les jours", kr:"Toulézour" },
+    { fr:"Lundi", kr:"Lindi" },
+    { fr:"Mardi", kr:"Mardi" },
+    { fr:"Mercredi", kr:"Mèrkredi" },
+    { fr:"Jeudi", kr:"Zédi" },
+    { fr:"Vendredi", kr:"Vandredi" },
+    { fr:"Samedi", kr:"Samdi" },
+    { fr:"Dimanche", kr:"Dimansh", ex:"Dimansh, nou manz la kaz granmèr.", ext:"Dimanche, on mange chez grand-mère." }
+  ],8),
+  U("u7","Bann shif 2","Les grands nombres","💯","#1CB0F6","#1899D6",[
+    { fr:"Onze", kr:"Onz" },
+    { fr:"Douze", kr:"Douz" },
+    { fr:"Quinze", kr:"Kinz" },
+    { fr:"Vingt", kr:"Vin" },
+    { fr:"Trente", kr:"Trant" },
+    { fr:"Quarante", kr:"Karant" },
+    { fr:"Cinquante", kr:"Sinkant" },
+    { fr:"Soixante", kr:"Swasant" },
+    { fr:"Quatre-vingts", kr:"Katrovin" },
+    { fr:"Cent", kr:"San", ex:"Sa i kout san éro.", ext:"Ça coûte cent euros." },
+    { fr:"Mille", kr:"Mil" }
+  ],6)
+];
+
+const S3U = [
+  U("u9","Lo kor","Le corps","👤","#FF4B4B","#E03B3B",[
+    { fr:"La tête", kr:"La tèt", ex:"Kass pa la tèt !", ext:"Ne te prends pas la tête !" },
+    { fr:"L’œil, les yeux", kr:"Lo zié" },
+    { fr:"La bouche", kr:"La boush" },
+    { fr:"Le nez", kr:"Lo né" },
+    { fr:"L’oreille", kr:"Zorèy" },
+    { fr:"La main", kr:"La min" },
+    { fr:"Le pied", kr:"Lo pié" },
+    { fr:"Le ventre", kr:"Lo vant" },
+    { fr:"Les cheveux", kr:"Shevé" },
+    { fr:"Le cœur", kr:"Lo kèr", ex:"Fé èk lo kèr.", ext:"Fait avec le cœur." }
+  ],5),
+  U("u10","Bann koulèr","Les couleurs","🎨","#CE82FF","#A560E8",[
+    { fr:"Rouge", kr:"Rouz" },
+    { fr:"Bleu", kr:"Blé" },
+    { fr:"Jaune", kr:"Zonn" },
+    { fr:"Vert", kr:"Vèr", ex:"La montagn lé vèr.", ext:"La montagne est verte." },
+    { fr:"Blanc", kr:"Blan" },
+    { fr:"Noir", kr:"Noir" },
+    { fr:"Gris", kr:"Gri" },
+    { fr:"Rose", kr:"Roz" }
+  ],4),
+  U("u11","Bann zanimo","Les animaux","🦎","#58CC02","#46A302",[
+    { fr:"Le chien", kr:"Shien" },
+    { fr:"Le chat", kr:"Sha" },
+    { fr:"Le cabri, la chèvre", kr:"Kabri", ex:"Kabri i manz dann la kour.", ext:"Le cabri mange dans la cour." },
+    { fr:"La poule", kr:"Poul" },
+    { fr:"L’oiseau", kr:"Zoizo", ex:"In zoli zoizo blan.", ext:"Un joli oiseau blanc." },
+    { fr:"Le poisson", kr:"Pwason" },
+    { fr:"Le tenrec", kr:"Tang" },
+    { fr:"Le gecko, le margouillat", kr:"Margouya" },
+    { fr:"La grosse araignée", kr:"Babouk" },
+    { fr:"Le moustique", kr:"Moustik" },
+    { fr:"Le bœuf", kr:"Bèf" },
+    { fr:"Le cochon", kr:"Koshon" }
+  ],6)
+];
+
+const S4U = [
+  U("u13","La natir","La nature et le temps","🌋","#00CD9C","#00A87F",[
+    { fr:"Le soleil", kr:"Soley", ex:"Soley i brile zordi.", ext:"Le soleil brûle aujourd’hui." },
+    { fr:"La pluie", kr:"La pli", ex:"La pli i tonm.", ext:"Il pleut." },
+    { fr:"La mer", kr:"La mèr" },
+    { fr:"La montagne", kr:"La montagn" },
+    { fr:"Le volcan", kr:"Lo volkan" },
+    { fr:"Le cyclone", kr:"Siklone" },
+    { fr:"La plage", kr:"La plaz" },
+    { fr:"La ravine", kr:"Ravine" },
+    { fr:"Le letchi", kr:"Létshi", ex:"Désanm, lé lo moi létshi !", ext:"Décembre, c’est le mois des letchis !" },
+    { fr:"La mangue", kr:"Mang" },
+    { fr:"Il fait chaud", kr:"I fé sho" },
+    { fr:"Il fait froid, frais", kr:"I fé fré" }
+  ],6),
+  U("u14","La kaz","La maison","🏠","#FF9600","#E08600",[
+    { fr:"La maison", kr:"La kaz", ex:"Mi sava la kaz.", ext:"Je rentre à la maison." },
+    { fr:"La cour, le jardin", kr:"La kour" },
+    { fr:"La varangue (véranda)", kr:"Varang", ex:"Alon asiz su la varang.", ext:"Asseyons-nous sur la varangue." },
+    { fr:"La porte", kr:"La port" },
+    { fr:"La fenêtre", kr:"Fenèt" },
+    { fr:"Le lit", kr:"Lili", ex:"Baba i dor dann son lili.", ext:"Le bébé dort dans son lit." },
+    { fr:"La table", kr:"La tab" },
+    { fr:"La chaise", kr:"La shèz" },
+    { fr:"Le portail", kr:"Baro" },
+    { fr:"La clé", kr:"La klé" }
+  ],5),
+  U("u15","An vil","En ville, les directions","🚌","#1CB0F6","#1899D6",[
+    { fr:"Le magasin, la boutique", kr:"Laboutik", ex:"Mi sava laboutik sinoi.", ext:"Je vais à la boutique chinoise." },
+    { fr:"L’école", kr:"Lékol" },
+    { fr:"L’église", kr:"Légliz" },
+    { fr:"Le marché", kr:"Bazar", ex:"Samdi gramatin, bazar !", ext:"Samedi matin, marché !" },
+    { fr:"La route, le chemin", kr:"Simin" },
+    { fr:"La voiture", kr:"Loto" },
+    { fr:"Le bus, le car", kr:"Kar", ex:"Mi pran lo kar zonn.", ext:"Je prends le car jaune." },
+    { fr:"À gauche", kr:"Agosh" },
+    { fr:"À droite", kr:"Adroit" },
+    { fr:"Tout droit", kr:"Tou droi" },
+    { fr:"À côté", kr:"Koté" },
+    { fr:"Dehors", kr:"Déor" }
+  ],6)
+];
+
+const S5U = [
+  U("u17","Bann vèrb","Les verbes du quotidien","🏃","#58CC02","#46A302",[
+    { fr:"Aller", kr:"Alé" },
+    { fr:"Venir", kr:"Vni", ex:"Vni manzé !", ext:"Viens manger !" },
+    { fr:"Faire", kr:"Fé", ex:"Kosa ou fé ?", ext:"Qu’est-ce que tu fais ?" },
+    { fr:"Dire", kr:"Di" },
+    { fr:"Voir", kr:"Vwar" },
+    { fr:"Regarder", kr:"Gardé", ex:"Gard sa !", ext:"Regarde ça !" },
+    { fr:"Écouter", kr:"Akouté" },
+    { fr:"Donner", kr:"Doné" },
+    { fr:"Prendre", kr:"Pran" },
+    { fr:"Acheter", kr:"Ashté" },
+    { fr:"Travailler", kr:"Travay" },
+    { fr:"Jouer", kr:"Zoué" },
+    { fr:"Dormir", kr:"Dormi", ex:"Baba la dormi.", ext:"Le bébé a dormi." },
+    { fr:"Marcher", kr:"Marshé" },
+    { fr:"Comprendre", kr:"Konpran" },
+    { fr:"Savoir, connaître", kr:"Koné", ex:"Mi koné pa.", ext:"Je ne sais pas." }
+  ],8),
+  U("u18","Bann adzektif","Les adjectifs","💡","#CE82FF","#A560E8",[
+    { fr:"Gros", kr:"Gro" },
+    { fr:"Petit", kr:"Ti", ex:"In ti kaz zoli.", ext:"Une jolie petite maison." },
+    { fr:"Grand", kr:"Gran" },
+    { fr:"Joli, beau", kr:"Zoli" },
+    { fr:"Bon", kr:"Bon" },
+    { fr:"Mauvais", kr:"Mové" },
+    { fr:"Fatigué", kr:"Fatigué" },
+    { fr:"Content", kr:"Kontan", ex:"Mwin lé kontan vwar aou !", ext:"Je suis content de te voir !" },
+    { fr:"Super, chouette", kr:"Gayar" },
+    { fr:"Doux, sucré", kr:"Dou" }
+  ],5),
+  U("u19","Èkspresion péi","Les expressions du pays","🗣️","#FF4B4B","#E03B3B",[
+    { fr:"Hé ! Dis donc !", kr:"Oté !", ex:"Oté, atann amwin !", ext:"Hé, attends-moi !" },
+    { fr:"C’est génial !", kr:"Lé gadiamb !" },
+    { fr:"Ne te prends pas la tête", kr:"Kass pa la tèt !" },
+    { fr:"Je ne comprends pas", kr:"Mi konpran pa", ex:"Dousman, mi konpran pa.", ext:"Doucement, je ne comprends pas." },
+    { fr:"Je parle un peu créole", kr:"Mi koz in pé kréol" },
+    { fr:"Je t’aime", kr:"Mi aim aou" },
+    { fr:"Doucement", kr:"Dousman", ex:"Dousman dousman !", ext:"Tout doucement !" },
+    { fr:"C’est ça, exactement !", kr:"Sa mèm !" },
+    { fr:"Attention ! Oh là !", kr:"Wopé !" },
+    { fr:"Un Métropolitain (surnom)", kr:"Zorèy" },
+    { fr:"Allez ! Vas-y !", kr:"Alé !" },
+    { fr:"Je rentre à la maison", kr:"Mi sava la kaz" }
+  ],6),
+  U("u20","Bann provèrb","Les proverbes créoles","📜","#FF9600","#E08600",[
+    { fr:"La persévérance vient à bout de tout", kr:"Ti ash i koup gro boi", ex:"Ti ash i koup gro boi", ext:"Litt. : petite hache coupe gros bois" },
+    { fr:"Qui ne tente rien n’a rien", kr:"Pakapab lé mor san esséyé", ex:"Pakapab lé mor san esséyé", ext:"Litt. : « Pas-capable » est mort sans essayer" },
+    { fr:"Ventre vide ne tient pas debout", kr:"Goni vid i tien pa dobout", ex:"Goni vid i tien pa dobout", ext:"Litt. : sac de jute vide ne tient pas debout" },
+    { fr:"Premier arrivé, premier servi", kr:"Bèf dovan i boir dolo prop", ex:"Bèf dovan i boir dolo prop", ext:"Litt. : le bœuf de devant boit l’eau propre" },
+    { fr:"Parler ne coûte rien", kr:"La lang na pwin lo zo", ex:"La lang na pwin lo zo", ext:"Litt. : la langue n’a pas d’os" },
+    { fr:"Faire la sourde oreille", kr:"Zorèy koshon dann marmit poi", ex:"Zorèy koshon dann marmit poi", ext:"Litt. : oreille de cochon dans la marmite de pois" },
+    { fr:"Dire oui évite les disputes", kr:"Dann wi na pwin batay", ex:"Dann wi na pwin batay", ext:"Litt. : dans le « oui », il n’y a pas de bataille" },
+    { fr:"Ne te mêle pas de la conversation", kr:"Kan mi koz èk sosis, boukané rès pandiyé" }
+  ],4)
+];
+
+/* ---------------- GRAMMAIRE : unités-leçons ---------------- */
+const GRAM_UNITS = [
+  {
+    id:"g1", gram:true, nom:"Ti kour gramèr 1", fr:"Le présent, la négation, le pluriel",
+    emoji:"📐", color:"#8B5CF6", dark:"#7C3AED",
+    tip:{
+      t:"Le présent, la négation, le pluriel",
+      html:`
+        <p>🔹 <b>Le présent</b> se forme avec la petite marque <b>i</b> entre le pronom et le verbe. Avec « mwin », <b>mwin&nbsp;i → mi</b>.</p>
+        <div class="ex">Ou i manz. Li i koz. Zot i travay.<i>Tu manges. Il parle. Vous travaillez.</i></div>
+        <div class="ex">Mi manz ri.<i>Je mange du riz. (mwin i → mi)</i></div>
+        <p>🔹 <b>La négation</b> : on met <b>pa</b> après le verbe.</p>
+        <div class="ex">Mi konpran pa.<i>Je ne comprends pas.</i></div>
+        <p>🔹 <b>Le pluriel</b> : <b>bann</b> devant le nom. <b>In</b> = un/une.</p>
+        <div class="ex">Bann marmay i zoué. In kaz.<i>Les enfants jouent. Une maison.</i></div>`
+    },
+    fills:[
+      { s:"Mi ___ kréol.", opts:["koz","kozé","la koz"], a:"koz", fr:"Je parle créole." },
+      { s:"Zot ___ manz zordi.", opts:["i","la","va"], a:"i", fr:"Vous mangez aujourd’hui." },
+      { s:"Mi manz ___ piman.", opts:["pa","pi","non"], a:"pa", fr:"Je ne mange pas de piment." },
+      { s:"___ marmay i zoué dann la kour.", opts:["Bann","In","Lo"], a:"Bann", fr:"Les enfants jouent dans la cour." },
+      { s:"Mi konpran ___ .", opts:["pa","pi","bann"], a:"pa", fr:"Je ne comprends pas." },
+      { s:"Néna ___ kaz zoli laba.", opts:["in","bann","la"], a:"in", fr:"Il y a une jolie maison là-bas." }
+    ],
+    types:[
+      { fr:"Je parle créole", kr:"Mi koz kréol" },
+      { fr:"Tu manges", kr:"Ou i manz" }
+    ]
+  },
+  {
+    id:"g2", gram:true, nom:"Ti kour gramèr 2", fr:"Le passé et le futur",
+    emoji:"📐", color:"#8B5CF6", dark:"#7C3AED",
+    tip:{
+      t:"Le passé (la, fine) et le futur (va, sar)",
+      html:`
+        <p>🔹 <b>Le passé</b> : pronom + <b>la</b> + verbe.</p>
+        <div class="ex">Mwin la manzé. Li la parti.<i>J’ai mangé. Il est parti.</i></div>
+        <p>🔹 <b>fine</b> = action déjà finie (« déjà »).</p>
+        <div class="ex">Mwin la fine manzé.<i>J’ai déjà fini de manger.</i></div>
+        <p>🔹 <b>Le futur</b> : <b>va</b> ou <b>sar</b> devant le verbe.</p>
+        <div class="ex">Mi va vni domin. Nou sar manzé talèr.<i>Je viendrai demain. Nous mangerons tout à l’heure.</i></div>`
+    },
+    fills:[
+      { s:"Yèr, mwin ___ manzé kari.", opts:["la","i","va"], a:"la", fr:"Hier, j’ai mangé du cari." },
+      { s:"Domin, mi ___ alé la plaz.", opts:["va","la","té"], a:"va", fr:"Demain, j’irai à la plage." },
+      { s:"Li la ___ travay.", opts:["fine","va","pa"], a:"fine", fr:"Il a déjà fini de travailler." },
+      { s:"Zot ___ parti yèr.", opts:["la","i","sar"], a:"la", fr:"Ils sont partis hier." },
+      { s:"Talèr, nou ___ zoué.", opts:["sar","la","té"], a:"sar", fr:"Tout à l’heure, nous jouerons." },
+      { s:"Banna ___ dormi.", opts:["la","i","in"], a:"la", fr:"Ils ont dormi." }
+    ],
+    types:[
+      { fr:"J’ai mangé", kr:"Mwin la manzé" },
+      { fr:"Je viendrai demain", kr:"Mi va vni domin" }
+    ]
+  },
+  {
+    id:"g3", gram:true, nom:"Ti kour gramèr 3", fr:"L’imparfait, les possessifs, les questions",
+    emoji:"📐", color:"#8B5CF6", dark:"#7C3AED",
+    tip:{
+      t:"L’imparfait (té), les possessifs, les questions",
+      html:`
+        <p>🔹 <b>té</b> = imparfait (« était, faisait… »).</p>
+        <div class="ex">Mwin té malad. Li té i travay.<i>J’étais malade. Il travaillait.</i></div>
+        <p>🔹 <b>Les possessifs</b> : <b>mon</b> (mon/ma), <b>out</b> (ton/ta), <b>son</b>, <b>nout</b> (notre), <b>zot</b> (votre/leur).</p>
+        <div class="ex">Out momon. Nout péi.<i>Ta maman. Notre pays.</i></div>
+        <p>🔹 <b>Les mots-questions</b> : Kosa ? (quoi) · Kisa ? (qui) · Ousa ? (où) · Koman ? (comment) · <b>Kansa ?</b> (quand) · <b>Akoz ?</b> (pourquoi) · <b>Konbien ?</b> (combien)</p>
+        <div class="ex">Ousa ou rèt ?<i>Où habites-tu ?</i></div>`
+    },
+    fills:[
+      { s:"Avan, li ___ rèt Sin-Dni.", opts:["té","va","sar"], a:"té", fr:"Avant, il habitait Saint-Denis." },
+      { s:"___ ou i ariv ?", opts:["Kansa","Kosa","Kisa"], a:"Kansa", fr:"Quand arrives-tu ?" },
+      { s:"___ ou i plèr ?", opts:["Akoz","Ousa","Konbien"], a:"Akoz", fr:"Pourquoi tu pleures ?" },
+      { s:"Sa lé ___ kaz.", opts:["mon","mwin","ma"], a:"mon", fr:"C’est ma maison." },
+      { s:"___ momon lé zanti.", opts:["Out","Ou","Ton"], a:"Out", fr:"Ta maman est gentille." },
+      { s:"___ sa i kout ?", opts:["Konbien","Kansa","Koman"], a:"Konbien", fr:"Combien ça coûte ?" }
+    ],
+    types:[
+      { fr:"C’est ma maison", kr:"Sa lé mon kaz" },
+      { fr:"Où habites-tu ?", kr:"Ousa ou rèt ?" }
+    ]
+  }
+];
+
+/* ---------------- SECTIONS ---------------- */
+const SECTIONS = [
+  { id:"s1", nom:"Bann promié pa", fr:"Les premiers pas", color:"#2B70C9", dark:"#235BA8", units:S1U },
+  { id:"s2", nom:"La vi toulézour", fr:"La vie de tous les jours", color:"#00A87F", dark:"#008F6C",
+    units:[...S2U, GRAM_UNITS[0]] },
+  { id:"s3", nom:"Lo mond otour", fr:"Le monde autour de nous", color:"#A560E8", dark:"#8E4BD0",
+    units:[...S3U, GRAM_UNITS[1]] },
+  { id:"s4", nom:"Dann péi", fr:"Dans le pays", color:"#E08600", dark:"#C47400",
+    units:[...S4U, GRAM_UNITS[2]] },
+  { id:"s5", nom:"Koz kréol !", fr:"Parle créole !", color:"#E03B3B", dark:"#C22F2F", units:S5U }
+];
+
+const BOSS_STYLE = { color:"#FFC800", dark:"#E6A800" };
+
+/* Liste plate et ordonnée des leçons (nœuds du parcours) */
+const LESSONS = [];
+SECTIONS.forEach((sec, si) => {
+  sec.units.forEach(u => {
+    if (u.gram){
+      LESSONS.push({ id:u.id, gram:true, unit:u });
+    } else {
+      u.lessons.forEach((ws, i) =>
+        LESSONS.push({ id:u.id + "l" + (i+1), unit:u, num:i+1, words:ws }));
+    }
+  });
+  const secWords = sec.units.filter(u => !u.gram).flatMap(u => u.lessons.flat());
+  const last = si === SECTIONS.length - 1;
+  LESSONS.push({
+    id:sec.id + "boss", boss:true, final:last, secWords,
+    unit:{ nom:last ? "Gran Final" : "Bilan " + (si+1), emoji:last ? "🏆" : "⭐", ...BOSS_STYLE }
+  });
+});
+
+const ALLW = SECTIONS.flatMap(s => s.units.filter(u => !u.gram).flatMap(u => u.lessons.flat()));
+const TILE_POOL = ALLW.map(w => w.kr).filter(k => !k.includes(" ") && !k.includes("…"));
+
+/* ---------------- ÉTAT + SAUVEGARDE ---------------- */
+const KEY = "otekreol-full-v1";
+const mem = {};
+const DEFAULT_STATE = {
+  xp:0, streak:{ count:0, last:null }, done:{}, sound:true, tts:true,
+  goal:20, day:{ d:null, xp:0 }, words:{}, errs:[], badges:{}, flags:{},
+  stats:{ right:0, wrong:0 }, session:null
+};
+function freshState(){ return JSON.parse(JSON.stringify(DEFAULT_STATE)); }
+let state = freshState();
+
+/* Détection du stockage local du navigateur (fichier ouvert en local) */
+function lsOK(){
+  try{ localStorage.setItem("__otekreol_test","1"); localStorage.removeItem("__otekreol_test"); return true; }
+  catch(e){ return false; }
+}
+const HAS_LS = lsOK();
+
+async function loadState(){
+  let raw = null;
+  try{
+    if (window.storage){
+      const r = await window.storage.get(KEY);
+      if (r && r.value) raw = r.value;
+    }
+  }catch(e){ /* première visite */ }
+  if (!raw && HAS_LS){ try{ raw = localStorage.getItem(KEY); }catch(e){} }
+  if (!raw && mem[KEY]) raw = JSON.stringify(mem[KEY]);
+  if (raw){ try{ state = Object.assign(freshState(), JSON.parse(raw)); }catch(e){} }
+}
+/* Écriture (throttlée à 1,5 s pour ne pas spammer le stockage) */
+let _lastSave = 0, _saveTimer = null;
+function writeSave(){
+  _lastSave = Date.now();
+  mem[KEY] = state;
+  const raw = JSON.stringify(state);
+  if (HAS_LS){ try{ localStorage.setItem(KEY, raw); }catch(e){} }
+  try{ if (window.storage) window.storage.set(KEY, raw); }catch(e){}
+  showSavePill();
+}
+function saveState(){
+  const wait = 1500 - (Date.now() - _lastSave);
+  if (wait <= 0){ writeSave(); }
+  else if (!_saveTimer){ _saveTimer = setTimeout(() => { _saveTimer = null; writeSave(); }, wait); }
+}
+function flushSave(){
+  if (_saveTimer){ clearTimeout(_saveTimer); _saveTimer = null; }
+  _lastSave = Date.now();
+  mem[KEY] = state;
+  const raw = JSON.stringify(state);
+  if (HAS_LS){ try{ localStorage.setItem(KEY, raw); }catch(e){} }
+  try{ if (window.storage) window.storage.set(KEY, raw); }catch(e){}
+}
+window.addEventListener("beforeunload", flushSave);
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") flushSave(); });
+
+async function wipeSave(){
+  if (_saveTimer){ clearTimeout(_saveTimer); _saveTimer = null; }
+  state = freshState();
+  delete mem[KEY];
+  if (HAS_LS){ try{ localStorage.removeItem(KEY); }catch(e){} }
+  try{ if (window.storage) await window.storage.delete(KEY); }catch(e){}
+}
+
+/* Indicateur discret « Sauvegardé » */
+const savePill = document.createElement("div");
+savePill.id = "savepill";
+savePill.textContent = "💾 Sauvegardé";
+document.body.appendChild(savePill);
+let _pillT = null;
+function showSavePill(){
+  savePill.classList.add("show");
+  clearTimeout(_pillT);
+  _pillT = setTimeout(() => savePill.classList.remove("show"), 900);
+}
+
+/* ----- Export / import de la progression (fichier .json) ----- */
+function exportSave(){
+  try{
+    const data = JSON.stringify({ app:"otekreol", v:1, date:new Date().toISOString(), state }, null, 2);
+    const blob = new Blob([data], { type:"application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "ote-kreol-sauvegarde-" + todayStr() + ".json";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    return true;
+  }catch(e){ return false; }
+}
+function importSave(file, done){
+  const r = new FileReader();
+  r.onload = () => {
+    try{
+      const d = JSON.parse(r.result);
+      const st = (d && d.app === "otekreol") ? d.state : d; // accepte aussi un état brut
+      if (!st || typeof st !== "object" || typeof st.xp !== "number") throw new Error("format");
+      state = Object.assign(freshState(), st);
+      flushSave();
+      done(true);
+    }catch(e){ done(false); }
+  };
+  r.onerror = () => done(false);
+  r.readAsText(file);
+}
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function bumpStreak(){
+  const t = todayStr(), s = state.streak;
+  if (s.last === t) return false;
+  const hier = new Date(Date.now() - 864e5).toISOString().slice(0,10);
+  s.count = (s.last === hier) ? s.count + 1 : 1;
+  s.last = t;
+  return true;
+}
+function addXP(n){
+  const t = todayStr();
+  if (state.day.d !== t) state.day = { d:t, xp:0 };
+  state.day.xp += n; state.xp += n;
+}
+function bumpWord(kr, ok){
+  const w = state.words[kr] || { s:0, t:0 };
+  w.s = Math.max(0, Math.min(5, w.s + (ok ? 1 : -1)));
+  w.t = Date.now();
+  state.words[kr] = w;
+  if (!ok){
+    state.errs = state.errs.filter(e => e !== kr);
+    state.errs.unshift(kr);
+    state.errs = state.errs.slice(0, 30);
+  }
+}
+function learnedCount(){ return Object.values(state.words).filter(w => w.s >= 3).length; }
+function doneCount(){ return Object.keys(state.done).length; }
+
+/* ---------------- BADGES ---------------- */
+const BADGES = [
+  { id:"b1",  e:"🌱", n:"Promié pa",      d:"Termine ta première leçon",       f:() => doneCount() >= 1 },
+  { id:"b5",  e:"👣", n:"Ti pa ti pa",    d:"Termine 5 leçons",                f:() => doneCount() >= 5 },
+  { id:"s1",  e:"🎓", n:"Marmay lékol",   d:"Réussis le Bilan 1",              f:() => !!state.done["s1boss"] },
+  { id:"s3",  e:"🌋", n:"Piton lé o",     d:"Réussis le Bilan 3",              f:() => !!state.done["s3boss"] },
+  { id:"fin", e:"🏆", n:"Zarboutan",      d:"Termine le Gran Final",           f:() => !!state.done["s5boss"] },
+  { id:"st3", e:"🔥", n:"3 zour swivan",  d:"Tiens une série de 3 jours",      f:() => state.streak.count >= 3 },
+  { id:"st7", e:"🧨", n:"In semenn !",    d:"Tiens une série de 7 jours",      f:() => state.streak.count >= 7 },
+  { id:"x100",e:"⚡", n:"100 XP",         d:"Atteins 100 XP",                  f:() => state.xp >= 100 },
+  { id:"x500",e:"💫", n:"500 XP",         d:"Atteins 500 XP",                  f:() => state.xp >= 500 },
+  { id:"pf",  e:"💎", n:"San fot",        d:"Une leçon sans aucune faute",     f:() => !!state.flags.perfect },
+  { id:"w50", e:"📚", n:"50 mo dann tèt", d:"Maîtrise 50 mots (force ≥ 3)",    f:() => learnedCount() >= 50 },
+  { id:"w120",e:"🧠", n:"120 mo !",       d:"Maîtrise 120 mots",               f:() => learnedCount() >= 120 },
+  { id:"ch15",e:"⏱️", n:"Rapid mèm !",    d:"15 bonnes réponses au Défi chrono", f:() => !!state.flags.chrono15 }
+];
+function checkBadges(){
+  const news = [];
+  for (const b of BADGES){
+    if (!state.badges[b.id] && b.f()){ state.badges[b.id] = todayStr(); news.push(b); }
+  }
+  return news;
+}
+
+/* ---------------- NIVEAUX ---------------- */
+const LEVELS = [0,30,80,160,280,450,700,1000,1400,1900];
+const TITLES = ["Débitan","Ti marmay","Marmay lékol","Zenn kozèr","Kozèr","Gran kozèr","Dalon kréol","Gramoun","Zarboutan","Mèt kréol"];
+function levelInfo(){
+  let l = 0;
+  while (l + 1 < LEVELS.length && state.xp >= LEVELS[l+1]) l++;
+  const next = LEVELS[l+1];
+  return { n:l+1, title:TITLES[l],
+           pct: next ? Math.round(100 * (state.xp - LEVELS[l]) / (next - LEVELS[l])) : 100,
+           next };
+}
+
+/* ---------------- PETITS OUTILS ---------------- */
+const app = document.getElementById("app");
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+function shuffle(a){
+  a = a.slice();
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function norm(s){
+  return String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/[’']/g," ").replace(/[.,!?«»…:;]/g,"").replace(/\s+/g," ").trim();
+}
+function sameSentence(a, b){
+  const na = norm(a), nb = norm(b);
+  return na === nb || na.replace(/ /g,"") === nb.replace(/ /g,"");
+}
+function tokens(ex){ return ex.split(/\s+/).map(t => t.replace(/[.,!?«»…]/g,"")).filter(Boolean); }
+function refreshStats(){
+  document.getElementById("st-streak").textContent = state.streak.count;
+  document.getElementById("st-xp").textContent = state.xp;
+  document.getElementById("soundbtn").textContent = state.sound ? "🔊" : "🔇";
+}
+
+/* ---------------- SONS + VOIX ---------------- */
+let AC = null;
+function beep(f, st, d, type, v){
+  const o = AC.createOscillator(), g = AC.createGain();
+  o.type = type; o.frequency.value = f;
+  g.gain.setValueAtTime(v, AC.currentTime + st);
+  g.gain.exponentialRampToValueAtTime(0.001, AC.currentTime + st + d);
+  o.connect(g); g.connect(AC.destination);
+  o.start(AC.currentTime + st); o.stop(AC.currentTime + st + d + .02);
+}
+function sfx(kind){
+  if (!state.sound) return;
+  try{
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+    if (AC.state === "suspended") AC.resume();
+    if (kind === "ok"){ beep(660,0,.1,"sine",.18); beep(880,.09,.14,"sine",.18); }
+    else if (kind === "ko"){ beep(190,0,.2,"square",.12); }
+    else if (kind === "match"){ beep(740,0,.09,"sine",.15); }
+    else if (kind === "tick"){ beep(980,0,.05,"sine",.1); }
+    else if (kind === "win"){ [523,659,784,1046].forEach((f,i) => beep(f, i*.11, .16, "sine", .16)); }
+  }catch(e){}
+}
+const TTS_SUPPORT = "speechSynthesis" in window;
+function ttsOn(){ return TTS_SUPPORT && state.tts; }
+function speak(txt){
+  if (!ttsOn()) return;
+  try{
+    const u = new SpeechSynthesisUtterance(txt);
+    u.lang = "fr-FR"; u.rate = 0.85;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+document.getElementById("soundbtn").addEventListener("click", () => {
+  state.sound = !state.sound; saveState(); refreshStats();
+});
+
+/* Clavier global */
+window.__key = null;
+document.addEventListener("keydown", e => { if (window.__key) window.__key(e); });
+
+/* ---------------- ONGLETS ---------------- */
+const TABS = { path:renderPath, train:renderTrain, dico:renderDico, gram:renderGram, prof:renderProf };
+let activeTab = "path";
+function goTab(t){
+  activeTab = t;
+  document.body.classList.remove("in-lesson");
+  window.__key = null;
+  document.querySelectorAll(".tab").forEach(b => b.classList.toggle("active", b.dataset.tab === t));
+  refreshStats();
+  TABS[t]();
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll(".tab").forEach(b => b.addEventListener("click", () => goTab(b.dataset.tab)));
+
+/* ============================================================
+   PARCOURS
+   ============================================================ */
+function isDone(id){ return !!state.done[id]; }
+function isUnlocked(idx){ return idx === 0 || isDone(LESSONS[idx-1].id); }
+function currentIdx(){
+  for (let i = 0; i < LESSONS.length; i++) if (!isDone(LESSONS[i].id)) return i;
+  return -1;
+}
+
+function goalCardHTML(){
+  const t = todayStr();
+  const dayXP = state.day.d === t ? state.day.xp : 0;
+  const pct = Math.min(100, Math.round(100 * dayXP / state.goal));
+  return `
+    <div class="card goal-card">
+      <span class="g-ic">🎯</span>
+      <div class="g-body">
+        <b>Objectif du jour</b> <span class="soft">· ${dayXP}/${state.goal} XP</span>
+        <div class="gbar"><span style="width:${pct}%"></span></div>
+      </div>
+      ${pct >= 100 ? "<span style='font-size:1.5rem'>✅</span>" : ""}
+    </div>`;
+}
+
+function renderPath(){
+  const cur = currentIdx();
+  let html = goalCardHTML() + `
+    <div class="mascot-hello">
+      <span class="m">🦎</span>
+      <p><b>Oté !</b> Mwin lé Margouya, out dalon kréol.
+      <span class="soft">Suis le parcours, ti pa ti pa !</span></p>
+    </div>`;
+
+  let flatIdx = 0;
+  let li = 0;
+  for (const sec of SECTIONS){
+    html += `
+      <div class="sec-banner" style="--sc:${sec.color};--sd:${sec.dark}">
+        <div class="s-eyebrow">SECTION ${sec.id.slice(1)}</div>
+        <h2>${esc(sec.nom)}</h2>
+        <div class="s-fr">${esc(sec.fr)}</div>
+      </div>`;
+    for (const u of sec.units){
+      const count = u.gram ? 1 : u.lessons.length;
+      html += `
+        <div class="unit-banner" style="--uc:${u.color};--ud:${u.dark}">
+          <div><h2>${esc(u.nom)}</h2><div class="u-fr">${esc(u.fr)}</div></div>
+          <span class="u-emoji">${u.emoji}</span>
+        </div><div class="path-seg">`;
+      for (let n = 0; n < count; n++){ html += nodeHTML(LESSONS[li], li, flatIdx, cur); li++; flatIdx++; }
+      html += `</div>`;
+    }
+    /* nœud bilan de section */
+    html += `<div class="path-seg">` + nodeHTML(LESSONS[li], li, flatIdx, cur) + `</div>`;
+    li++; flatIdx++;
+  }
+
+  app.innerHTML = html;
+  app.querySelectorAll("[data-lesson]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const idx = Number(btn.dataset.lesson);
+      if (!isUnlocked(idx)) return;
+      launchLesson(LESSONS[idx], isDone(LESSONS[idx].id));
+    });
+  });
+  const c = app.querySelector(".node.current");
+  if (c) c.scrollIntoView({ block:"center" });
+}
+
+function nodeHTML(lesson, idx, flatIdx, cur){
+  const u = lesson.unit;
+  const done = isDone(lesson.id);
+  const unlocked = isUnlocked(idx);
+  const isCur = idx === cur;
+  const off = Math.round(Math.sin(flatIdx * 1.05) * 62);
+  const icon = lesson.boss ? u.emoji : (lesson.gram ? "📐" : (unlocked ? "★" : "🔒"));
+  const label = lesson.boss ? u.nom : (lesson.gram ? "Gramèr" : "Leson " + lesson.num);
+  const cls = "node" + (done ? " done" : "") + (!unlocked ? " locked" : "") + (isCur ? " current" : "");
+  return `
+    <div class="node-wrap" style="transform:translateX(${off}px)">
+      ${isCur ? `<div class="start-bubble" style="--uc:${u.color}">COMMENCER</div>` : ""}
+      <button class="${cls}" style="--uc:${u.color};--ud:${u.dark}" data-lesson="${idx}"
+        ${unlocked ? "" : "disabled"} aria-label="${esc(label)}${done ? " (terminée, rejouer)" : (unlocked ? "" : " (verrouillée)")}">${icon}</button>
+      <div class="node-label">${esc(label)}</div>
+    </div>`;
+}
+
+/* ============================================================
+   GÉNÉRATION DES EXERCICES
+   ============================================================ */
+function makeChoose(w, pool){
+  const dir = Math.random() < .5 ? "kr" : "fr";
+  const autres = shuffle(pool.filter(x => x.kr !== w.kr)).slice(0, 3);
+  return { k:"choose", w, dir, options: shuffle([w, ...autres]) };
+}
+function makeListen(w, pool){
+  const autres = shuffle(pool.filter(x => x.kr !== w.kr)).slice(0, 3);
+  return { k:"listen", w, options: shuffle([w, ...autres]) };
+}
+function makeBuild(w){
+  const bons = tokens(w.ex);
+  const faux = shuffle(TILE_POOL.filter(t => !bons.some(b => norm(b) === norm(t)))).slice(0, 3);
+  return { k:"build", w, bons, tiles: shuffle([...bons, ...faux]).map((txt, i) => ({ id:i, txt })) };
+}
+const typeable  = w => !w.kr.includes("…") && w.kr.length <= 14;
+const buildable = w => w.ex && w.ext && tokens(w.ex).length >= 3 && tokens(w.ex).length <= 6;
+
+function buildWordExercises(words, optPool, opts){
+  opts = opts || {};
+  const exs = [];
+  let nT = 0, nB = 0, nL = 0;
+  for (const w of shuffle(words)){
+    if (nB < (opts.maxBuild ?? 2) && buildable(w)){ exs.push(makeBuild(w)); nB++; }
+    else if (nL < (opts.maxListen ?? 1) && ttsOn() && w.kr.length <= 18){ exs.push(makeListen(w, optPool)); nL++; }
+    else if (nT < (opts.maxType ?? 2) && typeable(w) && Math.random() < .6){ exs.push({ k:"type", w }); nT++; }
+    else exs.push(makeChoose(w, optPool));
+  }
+  if (words.length >= 4 && !opts.noMatch) exs.push({ k:"match", pairs: shuffle(words).slice(0, 4) });
+  return shuffle(exs);
+}
+
+function buildLessonExercises(lesson){
+  if (lesson.gram){
+    const u = lesson.unit;
+    const exs = u.fills.map(f => ({ k:"fill", f }));
+    u.types.forEach(t => exs.push({ k:"type", w:t }));
+    return shuffle(exs);
+  }
+  if (lesson.boss){
+    const words = shuffle(lesson.secWords).slice(0, lesson.final ? 10 : 9);
+    return buildWordExercises(words, lesson.secWords, { maxListen: ttsOn() ? 2 : 0 });
+  }
+  return buildWordExercises(lesson.words, lesson.words.length >= 4 ? lesson.words : ALLW);
+}
+
+/* ============================================================
+   MOTEUR DE SESSION (leçons + entraînements)
+   ============================================================ */
+const PRAISE = ["Sa mèm !","Gadiamb !","Trè bien !","Lé bon !","Ekselan !","Gayar !"];
+
+function lessonCfg(lesson, replay){
+  return {
+    meta:{ lessonId: lesson.id, replay: !!replay },
+    hearts: 4,
+    onFinish(res){
+      let gain = lesson.final ? 30 : (lesson.boss ? 20 : 10);
+      if (res.fautes === 0){ gain += 5; state.flags.perfect = true; }
+      if (replay) gain = Math.max(5, Math.floor(gain / 2));
+      state.done[lesson.id] = true;
+      return gain;
+    },
+    retry: () => launchLesson(lesson, replay)
+  };
+}
+
+function launchLesson(lesson, replay){
+  const cfg = lessonCfg(lesson, replay);
+  cfg.exercises = buildLessonExercises(lesson);
+  if (lesson.gram && !replay) showTip(lesson.unit.tip, () => runSession(cfg));
+  else runSession(cfg);
+}
+
+/* Reprise d'une leçon interrompue (fermeture de la page en cours de session) */
+function resumeLesson(lesson, s){
+  const cfg = lessonCfg(lesson, s.meta.replay);
+  cfg.exercises = [];
+  cfg.resume = { pending:s.pending, hearts:s.hearts, good:s.good, fautes:s.fautes, total:s.total };
+  runSession(cfg);
+}
+
+function maybeResume(){
+  const s = state.session;
+  if (!s || !s.meta || !Array.isArray(s.pending) || !s.pending.length) return;
+  const lesson = LESSONS.find(l => l.id === s.meta.lessonId);
+  if (!lesson){ state.session = null; saveState(); return; }
+  const label = lesson.boss ? lesson.unit.nom : (lesson.gram ? lesson.unit.nom : lesson.unit.nom + " · leson " + lesson.num);
+  const ov = document.createElement("div");
+  ov.className = "overlay";
+  ov.innerHTML = `
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="m">🦎</div>
+      <h3>Ou lavé in leson an plin !</h3>
+      <p>Tu avais une leçon en cours (« ${esc(label)} », ${s.good}/${s.total} réussies). On reprend là où tu t’étais arrêté ?</p>
+      <div class="btns">
+        <button class="btn-duo" id="res-yes">Reprendre la leçon</button>
+        <button class="btn-duo white" id="res-no">Non, abandonner</button>
+      </div>
+    </div>`;
+  document.body.appendChild(ov);
+  ov.querySelector("#res-yes").addEventListener("click", () => { ov.remove(); resumeLesson(lesson, s); });
+  ov.querySelector("#res-no").addEventListener("click", () => { state.session = null; saveState(); ov.remove(); });
+}
+
+function showTip(tip, go){
+  document.body.classList.add("in-lesson");
+  app.innerHTML = `
+    <div class="tipcard">
+      <div class="tipbox">
+        <div class="tiphead">📐 ${esc(tip.t)}</div>
+        <div class="tipbody">${tip.html}</div>
+      </div>
+      <button class="btn-duo wide" id="go">C’est parti !</button>
+      <br><button class="btn-duo white wide" id="back" style="margin-top:10px">← Retour</button>
+    </div>`;
+  app.querySelector("#go").addEventListener("click", go);
+  app.querySelector("#back").addEventListener("click", () => goTab("path"));
+  window.scrollTo(0,0);
+}
+
+function runSession(cfg){
+  const resume = cfg.resume || null;
+  const queue = resume ? resume.pending.slice() : cfg.exercises.slice();
+  const total = resume ? resume.total : queue.length;
+  const withHearts = cfg.hearts != null;
+  let hearts = resume ? resume.hearts : (cfg.hearts ?? 0);
+  let good = resume ? resume.good : 0, fautes = resume ? resume.fautes : 0;
+  let cur = null, phase = "answer";
+  let getAnswer = null, showResult = null;
+
+  /* Sauvegarde continue : après chaque réponse et à chaque nouvel exercice */
+  function persistSession(includeCur){
+    if (cfg.meta){
+      const pending = includeCur && cur ? [cur, ...queue] : queue.slice();
+      state.session = pending.length ? { meta:cfg.meta, pending, hearts, good, fautes, total } : null;
+    }
+    saveState();
+  }
+
+  document.body.classList.add("in-lesson");
+
+  function heartsHTML(){
+    if (!withHearts) return "<span class='soft'>Entraînement</span>";
+    let h = "";
+    for (let i = 0; i < cfg.hearts; i++) h += `<span class="${i < hearts ? "" : "lost"}">❤️</span>`;
+    return h;
+  }
+
+  function frame(inner){
+    app.innerHTML = `
+      <div class="lesson-top">
+        <button class="xbtn" id="quit" aria-label="Quitter">✕</button>
+        <div class="ltrack"><span style="width:${Math.round(100 * good / total)}%"></span></div>
+        <div class="hearts">${heartsHTML()}</div>
+      </div>
+      <div class="ex-area">${inner}</div>
+      <div class="checkbar" id="checkbar">
+        <div class="checkbar-in">
+          <div class="fb" id="fb"></div>
+          <button class="btn-duo" id="mainbtn" disabled>Vérifier</button>
+        </div>
+      </div>`;
+    app.querySelector("#quit").addEventListener("click", confirmQuit);
+    window.scrollTo(0,0);
+  }
+  function setMainEnabled(on){ app.querySelector("#mainbtn").disabled = !on; }
+
+  function next(){
+    if (withHearts && hearts <= 0){ failScreen(); return; }
+    if (!queue.length){ finish(); return; }
+    cur = queue.shift();
+    phase = "answer";
+    persistSession(true);
+    render[cur.k]();
+  }
+
+  function check(){
+    const res = getAnswer();
+    phase = "checked";
+    if (res.ok){ good++; state.stats.right++; sfx("ok"); }
+    else { fautes++; state.stats.wrong++; if (withHearts) hearts--; sfx("ko"); queue.push(cur); }
+    if (res.word) bumpWord(res.word, res.ok);
+    persistSession(false);
+    showResult(res.ok);
+
+    app.querySelector("#checkbar").classList.add(res.ok ? "ok" : "ko");
+    app.querySelector(".ltrack span").style.width = Math.round(100 * good / total) + "%";
+    app.querySelector(".hearts").innerHTML = heartsHTML();
+
+    if (res.ok && res.say) speak(res.say);
+
+    app.querySelector("#fb").innerHTML = res.ok
+      ? `<div class="fb-ic">✓</div><div><div class="fb-t">${PRAISE[Math.floor(Math.random()*PRAISE.length)]}</div>${res.sub ? `<div class="fb-s">${esc(res.sub)}</div>` : ""}</div>`
+      : `<div class="fb-ic">✕</div><div><div class="fb-t">Pa sa…</div><div class="fb-s">Bonne réponse : ${esc(res.correctLabel)}</div></div>`;
+
+    const btn = app.querySelector("#mainbtn");
+    btn.textContent = "Continuer";
+    btn.disabled = false;
+    if (!res.ok) btn.classList.add("red"); else btn.classList.remove("red");
+    btn.onclick = next;
+    btn.focus();
+  }
+  function wireMain(){
+    const btn = app.querySelector("#mainbtn");
+    btn.onclick = () => { if (phase === "answer" && !btn.disabled) check(); };
+  }
+
+  /* ---------- rendus d’exercices ---------- */
+  const render = {
+
+    choose(){
+      const q = cur, demandeKreol = q.dir === "kr";
+      let sel = null;
+      frame(`
+        <h2 class="ex-title">${demandeKreol ? "Choisis la traduction en kréol" : "Kosa i vé dir ?"}</h2>
+        <div class="speech"><span class="m">🦎</span>
+          <div class="bubble">${esc(demandeKreol ? q.w.fr : q.w.kr)}
+            ${!demandeKreol && ttsOn() ? `<button class="minisay" id="say" aria-label="Écouter">🔊</button>` : ""}
+          </div></div>
+        <div class="options">
+          ${q.options.map((o,i) => `<button class="option" data-i="${i}"><span class="okey">${i+1}</span>${esc(demandeKreol ? o.kr : o.fr)}</button>`).join("")}
+        </div>`);
+      const say = app.querySelector("#say");
+      if (say) say.addEventListener("click", () => speak(q.w.kr));
+      const opts = app.querySelectorAll(".option");
+      function pick(i){
+        if (phase !== "answer") return;
+        sel = i;
+        opts.forEach((o,j) => o.classList.toggle("selected", j === i));
+        setMainEnabled(true);
+      }
+      opts.forEach((o,i) => o.addEventListener("click", () => pick(i)));
+      getAnswer = () => ({ ok:q.options[sel].kr === q.w.kr, word:q.w.kr,
+                           correctLabel: demandeKreol ? q.w.kr : q.w.fr,
+                           say: demandeKreol ? q.w.kr : null });
+      showResult = () => opts.forEach((o,i) => {
+        o.disabled = true;
+        if (q.options[i].kr === q.w.kr) o.classList.add("right");
+        else if (i === sel) o.classList.add("wrongsel");
+      });
+      wireMain();
+      window.__key = e => {
+        if (phase === "answer" && /^[1-4]$/.test(e.key) && opts[e.key-1]) pick(Number(e.key)-1);
+        if (e.key === "Enter") app.querySelector("#mainbtn").click();
+      };
+    },
+
+    listen(){
+      const q = cur;
+      let sel = null;
+      frame(`
+        <h2 class="ex-title">Kosa ou i antann ? <span class="soft">· qu’entends-tu ?</span></h2>
+        <button class="bigplay" id="play" aria-label="Écouter le mot">🔊</button>
+        <div class="options">
+          ${q.options.map((o,i) => `<button class="option" data-i="${i}"><span class="okey">${i+1}</span>${esc(o.kr)}</button>`).join("")}
+        </div>`);
+      const play = () => speak(q.w.kr);
+      app.querySelector("#play").addEventListener("click", play);
+      setTimeout(play, 350);
+      const opts = app.querySelectorAll(".option");
+      function pick(i){
+        if (phase !== "answer") return;
+        sel = i;
+        opts.forEach((o,j) => o.classList.toggle("selected", j === i));
+        setMainEnabled(true);
+      }
+      opts.forEach((o,i) => o.addEventListener("click", () => pick(i)));
+      getAnswer = () => ({ ok:q.options[sel].kr === q.w.kr, word:q.w.kr,
+                           correctLabel:q.w.kr, sub:q.w.fr });
+      showResult = () => opts.forEach((o,i) => {
+        o.disabled = true;
+        if (q.options[i].kr === q.w.kr) o.classList.add("right");
+        else if (i === sel) o.classList.add("wrongsel");
+      });
+      wireMain();
+      window.__key = e => {
+        if (phase === "answer" && /^[1-4]$/.test(e.key) && opts[e.key-1]) pick(Number(e.key)-1);
+        if (e.key === "Enter") app.querySelector("#mainbtn").click();
+      };
+    },
+
+    fill(){
+      const q = cur.f;
+      let sel = null;
+      const options = shuffle(q.opts);
+      frame(`
+        <h2 class="ex-title">Complète la phrase</h2>
+        <div class="fillline">${esc(q.s).replace("___", `<span class="gap" id="gap">&nbsp;</span>`)}</div>
+        <div class="fillhint">« ${esc(q.fr)} »</div>
+        <div class="options">
+          ${options.map((o,i) => `<button class="option" data-i="${i}"><span class="okey">${i+1}</span>${esc(o)}</button>`).join("")}
+        </div>`);
+      const opts = app.querySelectorAll(".option");
+      const gap = app.querySelector("#gap");
+      function pick(i){
+        if (phase !== "answer") return;
+        sel = i;
+        gap.textContent = options[i];
+        opts.forEach((o,j) => o.classList.toggle("selected", j === i));
+        setMainEnabled(true);
+      }
+      opts.forEach((o,i) => o.addEventListener("click", () => pick(i)));
+      getAnswer = () => ({ ok: options[sel] === q.a,
+                           correctLabel: q.s.replace("___", q.a),
+                           say: q.s.replace("___", q.a) });
+      showResult = ok => {
+        opts.forEach((o,i) => {
+          o.disabled = true;
+          if (options[i] === q.a) o.classList.add("right");
+          else if (i === sel) o.classList.add("wrongsel");
+        });
+        if (ok) gap.style.color = "var(--green-d)";
+      };
+      wireMain();
+      window.__key = e => {
+        if (phase === "answer" && /^[1-4]$/.test(e.key) && opts[e.key-1]) pick(Number(e.key)-1);
+        if (e.key === "Enter") app.querySelector("#mainbtn").click();
+      };
+    },
+
+    build(){
+      const q = cur;
+      const placed = [];
+      frame(`
+        <h2 class="ex-title">Écris la phrase en kréol</h2>
+        <div class="speech"><span class="m">🦎</span><div class="bubble">« ${esc(q.w.ext)} »</div></div>
+        <div class="answerline" id="line" aria-label="Ta réponse"></div>
+        <div class="tilebank" id="bank"></div>`);
+      const line = app.querySelector("#line"), bank = app.querySelector("#bank");
+      function draw(){
+        line.innerHTML = placed.map(t => `<button class="tile" data-p="${t.id}">${esc(t.txt)}</button>`).join("");
+        bank.innerHTML = q.tiles.map(t => {
+          const used = placed.some(p => p.id === t.id);
+          return `<button class="tile${used ? " ghost" : ""}" data-b="${t.id}" ${used ? "disabled" : ""}>${esc(t.txt)}</button>`;
+        }).join("");
+        line.querySelectorAll("[data-p]").forEach(b => b.addEventListener("click", () => {
+          if (phase !== "answer") return;
+          const i = placed.findIndex(p => p.id === Number(b.dataset.p));
+          if (i > -1) placed.splice(i, 1);
+          draw();
+        }));
+        bank.querySelectorAll("[data-b]:not([disabled])").forEach(b => b.addEventListener("click", () => {
+          if (phase !== "answer") return;
+          placed.push(q.tiles.find(t => t.id === Number(b.dataset.b)));
+          draw();
+        }));
+        setMainEnabled(placed.length > 0);
+      }
+      draw();
+      getAnswer = () => ({ ok: sameSentence(placed.map(t => t.txt).join(" "), q.bons.join(" ")),
+                           word:q.w.kr, correctLabel:q.w.ex, say:q.w.ex });
+      showResult = () => app.querySelectorAll(".tile").forEach(b => b.disabled = true);
+      wireMain();
+      window.__key = e => { if (e.key === "Enter") app.querySelector("#mainbtn").click(); };
+    },
+
+    type(){
+      const q = cur;
+      frame(`
+        <h2 class="ex-title">Écris en kréol rénioné</h2>
+        <div class="speech"><span class="m">🦎</span><div class="bubble">« ${esc(q.w.fr)} »</div></div>
+        <input class="tinput" id="tin" autocomplete="off" autocapitalize="off" spellcheck="false"
+               placeholder="Écris en kréol…" aria-label="Ta réponse en créole">`);
+      const inp = app.querySelector("#tin");
+      inp.focus();
+      inp.addEventListener("input", () => setMainEnabled(inp.value.trim().length > 0));
+      getAnswer = () => ({ ok: sameSentence(inp.value, q.w.kr), word:q.w.kr,
+                           correctLabel:q.w.kr, say:q.w.kr });
+      showResult = () => { inp.disabled = true; };
+      wireMain();
+      window.__key = e => { if (e.key === "Enter") app.querySelector("#mainbtn").click(); };
+    },
+
+    match(){
+      const q = cur;
+      const gauche = shuffle(q.pairs), droite = shuffle(q.pairs);
+      let selL = null, selR = null, faits = 0;
+      frame(`
+        <h2 class="ex-title">Associe les paires</h2>
+        <div class="match">
+          <div class="mcol">${gauche.map(p => `<button class="mbtn" data-l="${esc(p.kr)}">${esc(p.fr)}</button>`).join("")}</div>
+          <div class="mcol">${droite.map(p => `<button class="mbtn" data-r="${esc(p.kr)}">${esc(p.kr)}</button>`).join("")}</div>
+        </div>`);
+      const btnL = app.querySelectorAll("[data-l]"), btnR = app.querySelectorAll("[data-r]");
+      function tryMatch(){
+        if (!selL || !selR) return;
+        const a = selL, b = selR; selL = selR = null;
+        if (a.dataset.l === b.dataset.r){
+          faits++; sfx("match"); bumpWord(a.dataset.l, true);
+          [a,b].forEach(x => { x.classList.remove("selected"); x.classList.add("matched"); x.disabled = true; });
+          if (faits === q.pairs.length){
+            phase = "checked"; good++; state.stats.right++; sfx("ok");
+            persistSession(false);
+            app.querySelector("#checkbar").classList.add("ok");
+            app.querySelector(".ltrack span").style.width = Math.round(100 * good / total) + "%";
+            app.querySelector("#fb").innerHTML = `<div class="fb-ic">✓</div><div><div class="fb-t">Gadiamb ! Tout lé bon.</div></div>`;
+            const btn = app.querySelector("#mainbtn");
+            btn.textContent = "Continuer"; btn.disabled = false; btn.onclick = next; btn.focus();
+          }
+        } else {
+          [a,b].forEach(x => { x.classList.remove("selected"); x.classList.add("shake"); });
+          setTimeout(() => [a,b].forEach(x => x.classList.remove("shake")), 320);
+        }
+      }
+      btnL.forEach(b => b.addEventListener("click", () => {
+        if (b.classList.contains("matched") || phase !== "answer") return;
+        btnL.forEach(x => x.classList.remove("selected"));
+        b.classList.add("selected"); selL = b; tryMatch();
+      }));
+      btnR.forEach(b => b.addEventListener("click", () => {
+        if (b.classList.contains("matched") || phase !== "answer") return;
+        btnR.forEach(x => x.classList.remove("selected"));
+        b.classList.add("selected"); selR = b; tryMatch();
+      }));
+      getAnswer = () => ({ ok:true, correctLabel:"" });
+      showResult = () => {};
+      window.__key = e => { if (e.key === "Enter" && phase === "checked") app.querySelector("#mainbtn").click(); };
+    }
+  };
+
+  /* ---------- sorties ---------- */
+  function confirmQuit(){
+    const ov = document.createElement("div");
+    ov.className = "overlay";
+    ov.innerHTML = `
+      <div class="modal" role="dialog" aria-modal="true">
+        <div class="m">🦎</div>
+        <h3>Ou vé kit la sésion ?</h3>
+        <p>Si tu quittes maintenant, la progression de cette session sera perdue.</p>
+        <div class="btns">
+          <button class="btn-duo" id="stay">Continuer</button>
+          <button class="btn-duo white" id="leave">Quitter</button>
+        </div>
+      </div>`;
+    document.body.appendChild(ov);
+    ov.querySelector("#stay").addEventListener("click", () => ov.remove());
+    ov.querySelector("#leave").addEventListener("click", () => { state.session = null; saveState(); ov.remove(); goTab(activeTab); });
+  }
+
+  function failScreen(){
+    window.__key = null;
+    state.session = null;
+    app.innerHTML = `
+      <div class="center-screen">
+        <div class="m-big">💔</div>
+        <h2>Ou la pèrdi out bann kèr !</h2>
+        <p class="soft" style="margin-bottom:24px">Kass pa la tèt… réessaie, ti pa ti pa !</p>
+        <div class="rescards">
+          <div class="rescard" style="--rc:var(--red)"><span>BONNES RÉPONSES</span><b>${good}/${total}</b></div>
+        </div>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+          <button class="btn-duo" id="retry">Réessayer</button>
+          <button class="btn-duo white" id="back">Retour</button>
+        </div>
+      </div>`;
+    app.querySelector("#retry").addEventListener("click", cfg.retry);
+    app.querySelector("#back").addEventListener("click", () => goTab(activeTab));
+    saveState();
+  }
+
+  function finish(){
+    window.__key = null;
+    state.session = null;
+    const gain = cfg.onFinish({ good, fautes, total });
+    addXP(gain);
+    const nouvelleSerie = bumpStreak();
+    const news = checkBadges();
+    saveState();
+    sfx("win");
+    const acc = Math.round(100 * total / (total + fautes));
+    app.innerHTML = `
+      <div class="center-screen">
+        <div class="m-big">🦎</div>
+        <div class="cheer">${fautes === 0 ? "Parfait ! Gadiamb !" : "Lé gadiamb !"}</div>
+        <h2>${esc(cfg.doneTitle || "Sésion fini !")}</h2>
+        <div class="rescards">
+          <div class="rescard" style="--rc:var(--gold-d)"><span>XP GAGNÉ</span><b>+${gain}</b></div>
+          <div class="rescard" style="--rc:var(--green)"><span>PRÉCISION</span><b>${acc}%</b></div>
+          <div class="rescard" style="--rc:var(--orange)"><span>SÉRIE</span><b>🔥 ${state.streak.count}</b></div>
+        </div>
+        ${news.length ? `<div class="newbadges">${news.map(b => `<span class="badgechip">${b.e} ${esc(b.n)}</span>`).join("")}</div>` : ""}
+        ${nouvelleSerie ? `<p style="color:var(--orange);font-weight:900;margin:-8px 0 22px">🔥 Série prolongée : reviens demain !</p>` : ""}
+        <button class="btn-duo" id="cont">Continuer</button>
+      </div>`;
+    app.querySelector("#cont").addEventListener("click", () => goTab(activeTab));
+    window.__key = e => { if (e.key === "Enter") app.querySelector("#cont").click(); };
+  }
+
+  next();
+}
+
+/* ============================================================
+   ENTRAÎNEMENT
+   ============================================================ */
+function seenWords(){ return ALLW.filter(w => state.words[w.kr]); }
+function dueWords(){
+  const now = Date.now(), J3 = 3 * 864e5;
+  return seenWords()
+    .filter(w => { const s = state.words[w.kr]; return s.s <= 2 || (now - s.t > J3 && s.s < 5); })
+    .sort((a,b) => (state.words[a.kr].s - state.words[b.kr].s) || (state.words[a.kr].t - state.words[b.kr].t));
+}
+
+function renderTrain(){
+  const due = dueWords().length;
+  const errs = state.errs.length;
+  app.innerHTML = `
+    ${goalCardHTML()}
+    <h2 style="margin:6px 0 12px">Antrènman <span class="soft">· sans cœurs, juste pour progresser</span></h2>
+
+    <button class="train-card" id="t-srs" ${seenWords().length ? "" : "disabled"}>
+      <span class="t-ic">🔁</span>
+      <div class="t-body"><h3>Révision intelligente</h3>
+      <div class="soft">Les mots faibles ou pas vus depuis longtemps</div></div>
+      ${due ? `<span class="due">${due} à revoir</span>` : ""}
+    </button>
+
+    <button class="train-card" id="t-err" ${errs ? "" : "disabled"}>
+      <span class="t-ic">❌</span>
+      <div class="t-body"><h3>Mes erreurs</h3>
+      <div class="soft">Retravaille tes dernières fautes</div></div>
+      ${errs ? `<span class="due">${errs}</span>` : ""}
+    </button>
+
+    <button class="train-card" id="t-ecoute" ${TTS_SUPPORT ? "" : "disabled"}>
+      <span class="t-ic">🎧</span>
+      <div class="t-body"><h3>Écoute</h3>
+      <div class="soft">${TTS_SUPPORT ? "Reconnais les mots à l’oreille (voix de synthèse)" : "Indisponible sur ce navigateur"}</div></div>
+    </button>
+
+    <button class="train-card" id="t-chrono">
+      <span class="t-ic">⏱️</span>
+      <div class="t-body"><h3>Défi chrono</h3>
+      <div class="soft">60 secondes, un maximum de bonnes réponses !</div></div>
+    </button>`;
+
+  const pool = seenWords().length >= 8 ? seenWords() : ALLW;
+
+  app.querySelector("#t-srs").addEventListener("click", () => {
+    if (!seenWords().length) return;
+    const mots = dueWords().slice(0, 10);
+    const list = mots.length >= 4 ? mots : shuffle(seenWords()).slice(0, 8);
+    runSession({
+      exercises: buildWordExercises(list, pool, { noMatch:list.length < 4 }),
+      hearts: null, doneTitle: "Révizion fini !",
+      onFinish: r => r.fautes === 0 ? 10 : 8,
+      retry: renderTrain
+    });
+  });
+
+  app.querySelector("#t-err").addEventListener("click", () => {
+    if (!state.errs.length) return;
+    const mots = state.errs.map(kr => ALLW.find(w => w.kr === kr)).filter(Boolean).slice(0, 8);
+    runSession({
+      exercises: buildWordExercises(mots, pool, { noMatch:mots.length < 4 }),
+      hearts: null, doneTitle: "Bann zerèr korizé !",
+      onFinish(r){
+        if (r.fautes === 0) state.errs = state.errs.filter(kr => !mots.some(m => m.kr === kr));
+        return 8;
+      },
+      retry: renderTrain
+    });
+  });
+
+  app.querySelector("#t-ecoute").addEventListener("click", () => {
+    if (!TTS_SUPPORT) return;
+    state.tts = true;
+    const mots = shuffle(pool).slice(0, 8);
+    runSession({
+      exercises: shuffle(mots.map(w => makeListen(w, pool))),
+      hearts: null, doneTitle: "Zorèy fine shofé !",
+      onFinish: r => r.fautes === 0 ? 10 : 8,
+      retry: renderTrain
+    });
+  });
+
+  app.querySelector("#t-chrono").addEventListener("click", runChrono);
+}
+
+/* ---------- Défi chrono ---------- */
+function runChrono(){
+  document.body.classList.add("in-lesson");
+  let left = 60, score = 0, ended = false;
+  let timerId = null;
+
+  function fin(){
+    if (ended) return;
+    ended = true;
+    clearInterval(timerId);
+    window.__key = null;
+    if (score >= 15) state.flags.chrono15 = true;
+    const gain = Math.min(20, score);
+    addXP(gain);
+    bumpStreak();
+    const news = checkBadges();
+    saveState();
+    sfx("win");
+    app.innerHTML = `
+      <div class="center-screen">
+        <div class="m-big">⏱️</div>
+        <h2>Tan lé fini !</h2>
+        <div class="rescards">
+          <div class="rescard" style="--rc:var(--orange)"><span>BONNES RÉPONSES</span><b>${score}</b></div>
+          <div class="rescard" style="--rc:var(--gold-d)"><span>XP GAGNÉ</span><b>+${gain}</b></div>
+        </div>
+        ${news.length ? `<div class="newbadges">${news.map(b => `<span class="badgechip">${b.e} ${esc(b.n)}</span>`).join("")}</div>` : ""}
+        <button class="btn-duo" id="again">Rejouer</button>
+        <button class="btn-duo white" id="back" style="margin-left:10px">Retour</button>
+      </div>`;
+    app.querySelector("#again").addEventListener("click", runChrono);
+    app.querySelector("#back").addEventListener("click", () => goTab("train"));
+  }
+
+  function tick(){
+    left--;
+    const t = app.querySelector("#timer");
+    if (t) t.textContent = left + " s";
+    if (left <= 5 && left > 0) sfx("tick");
+    if (left <= 0) fin();
+  }
+  timerId = setInterval(tick, 1000);
+
+  function question(){
+    if (ended) return;
+    const q = makeChoose(shuffle(ALLW)[0], ALLW);
+    const demandeKreol = q.dir === "kr";
+    app.innerHTML = `
+      <div class="lesson-top">
+        <button class="xbtn" id="quit" aria-label="Quitter">✕</button>
+        <div class="ltrack"><span style="width:${Math.min(100, score*5)}%"></span></div>
+        <div class="timer" id="timer">${left} s</div>
+      </div>
+      <div class="ex-area">
+        <h2 class="ex-title">${demandeKreol ? "An kréol :" : "An fransé :"} <b>${esc(demandeKreol ? q.w.fr : q.w.kr)}</b></h2>
+        <div class="options">
+          ${q.options.map((o,i) => `<button class="option" data-i="${i}"><span class="okey">${i+1}</span>${esc(demandeKreol ? o.kr : o.fr)}</button>`).join("")}
+        </div>
+        <p class="soft" style="margin-top:14px;text-align:center">Score : <b>${score}</b></p>
+      </div>`;
+    app.querySelector("#quit").addEventListener("click", fin);
+    const opts = app.querySelectorAll(".option");
+    function answer(i){
+      if (ended) return;
+      const ok = q.options[i].kr === q.w.kr;
+      bumpWord(q.w.kr, ok);
+      saveState();
+      if (ok){ score++; state.stats.right++; sfx("match"); }
+      else { state.stats.wrong++; sfx("ko"); }
+      opts.forEach((o,j) => {
+        o.disabled = true;
+        if (q.options[j].kr === q.w.kr) o.classList.add("right");
+        else if (j === i) o.classList.add("wrongsel");
+      });
+      setTimeout(question, ok ? 350 : 750);
+    }
+    opts.forEach((o,i) => o.addEventListener("click", () => answer(i)));
+    window.__key = e => { if (/^[1-4]$/.test(e.key) && opts[e.key-1] && !opts[e.key-1].disabled) answer(Number(e.key)-1); };
+  }
+  question();
+}
+
+/* ============================================================
+   DICO
+   ============================================================ */
+function renderDico(){
+  app.innerHTML = `
+    <h2 style="margin-bottom:10px">Diksionèr <span class="soft">· ${ALLW.length} mots et expressions</span></h2>
+    <input class="search" id="q" placeholder="Cherche un mot (kréol ou français)…" aria-label="Recherche">
+    <div id="list"></div>`;
+  const list = app.querySelector("#list");
+  const q = app.querySelector("#q");
+
+  function row(w){
+    const s = state.words[w.kr] ? state.words[w.kr].s : 0;
+    let dots = "";
+    for (let i = 0; i < 5; i++) dots += `<i class="${i < s ? "on" : ""}"></i>`;
+    return `
+      <div class="dic-row">
+        ${TTS_SUPPORT ? `<button class="minisay" data-say="${esc(w.kr)}" aria-label="Écouter ${esc(w.kr)}">🔊</button>` : ""}
+        <div>
+          <span class="d-kr">${esc(w.kr)}</span><span class="dots" title="Force de mémorisation">${dots}</span>
+          <div class="d-fr">${esc(w.fr)}</div>
+          ${w.ex ? `<div class="d-ex">« ${esc(w.ex)} »${w.ext ? " — " + esc(w.ext) : ""}</div>` : ""}
+        </div>
+      </div>`;
+  }
+
+  function draw(){
+    const f = norm(q.value);
+    let html = "";
+    for (const sec of SECTIONS){
+      for (const u of sec.units){
+        if (u.gram) continue;
+        const mots = u.lessons.flat().filter(w => !f || norm(w.kr).includes(f) || norm(w.fr).includes(f));
+        if (!mots.length) continue;
+        html += `<div class="dic-unit">${u.emoji} ${esc(u.nom)} · ${esc(u.fr)}</div>` + mots.map(row).join("");
+      }
+    }
+    list.innerHTML = html || `<p class="soft" style="padding:20px 4px">Napwin nada… aucun mot trouvé. Essaie autre chose !</p>`;
+    list.querySelectorAll("[data-say]").forEach(b =>
+      b.addEventListener("click", () => { state.tts = true; speak(b.dataset.say); }));
+  }
+  q.addEventListener("input", draw);
+  draw();
+}
+
+/* ============================================================
+   GRAMÈR (référence)
+   ============================================================ */
+const GRAM_REF = [
+  { t:"🙋 Les pronoms", html:`
+    <table>
+      <tr><td>mwin / moin</td><td>je, moi — devant « i », devient <b>mi</b></td></tr>
+      <tr><td>ou</td><td>tu, toi</td></tr>
+      <tr><td>li</td><td>il, elle</td></tr>
+      <tr><td>nou</td><td>nous</td></tr>
+      <tr><td>zot</td><td>vous / ils / elles</td></tr>
+      <tr><td>banna</td><td>eux, elles</td></tr>
+    </table>
+    <div class="ex">Mi koz kréol. Zot i konpran ?<i>Je parle créole. Vous comprenez ?</i></div>` },
+  { t:"🧍 Être et avoir : lé, nana, napwin", html:`
+    <p><b>lé</b> = être · <b>nana / néna</b> = avoir, il y a · <b>napwin</b> = ne pas avoir, il n’y a pas.</p>
+    <div class="ex">Mwin lé fatigué.<i>Je suis fatigué.</i></div>
+    <div class="ex">Nana in ta d’moun. Napwin dolo.<i>Il y a beaucoup de monde. Il n’y a pas d’eau.</i></div>` },
+  { t:"⏱️ Le présent : i", html:`
+    <p>Pronom + <b>i</b> + verbe. Avec « mwin » : mwin i → <b>mi</b>.</p>
+    <div class="ex">Ou i manz. Li i travay. Mi dor.<i>Tu manges. Il travaille. Je dors.</i></div>` },
+  { t:"⏪ Le passé : la, fine, té", html:`
+    <p><b>la</b> = passé (« a fait ») · <b>fine</b> = déjà fini · <b>té</b> = imparfait.</p>
+    <div class="ex">Mwin la manzé.<i>J’ai mangé.</i></div>
+    <div class="ex">Li la fine travay.<i>Il a déjà fini de travailler.</i></div>
+    <div class="ex">Mwin té malad. Li té i travay.<i>J’étais malade. Il travaillait.</i></div>` },
+  { t:"⏩ Le futur : va, sar", html:`
+    <p><b>va</b> ou <b>sar</b> devant le verbe.</p>
+    <div class="ex">Mi va vni domin. Nou sar manzé talèr.<i>Je viendrai demain. Nous mangerons tout à l’heure.</i></div>` },
+  { t:"🚫 La négation : pa", html:`
+    <p><b>pa</b> se place après le verbe ou la marque de temps. <b>pi</b> = plus.</p>
+    <div class="ex">Mi konpran pa. Mwin la pa vni.<i>Je ne comprends pas. Je ne suis pas venu.</i></div>
+    <div class="ex">Napwin pi ri.<i>Il n’y a plus de riz.</i></div>` },
+  { t:"🔢 Articles et pluriel : in, bann, -la", html:`
+    <p><b>in</b> = un/une · <b>bann</b> = les/des (pluriel) · <b>-la</b> après le nom = ce/cette.</p>
+    <div class="ex">In kaz. Bann marmay. Piman-la i pik !<i>Une maison. Les enfants. Ce piment pique !</i></div>` },
+  { t:"👐 Les possessifs", html:`
+    <table>
+      <tr><td>mon</td><td>mon, ma</td></tr>
+      <tr><td>out</td><td>ton, ta</td></tr>
+      <tr><td>son</td><td>son, sa</td></tr>
+      <tr><td>nout</td><td>notre</td></tr>
+      <tr><td>zot</td><td>votre, leur</td></tr>
+    </table>
+    <div class="ex">Out momon lé zanti. Nout péi lé zoli.<i>Ta maman est gentille. Notre pays est beau.</i></div>` },
+  { t:"❓ Poser une question", html:`
+    <table>
+      <tr><td>Kosa ?</td><td>quoi ?</td></tr>
+      <tr><td>Kisa ?</td><td>qui ?</td></tr>
+      <tr><td>Ousa ?</td><td>où ?</td></tr>
+      <tr><td>Koman ?</td><td>comment ?</td></tr>
+      <tr><td>Kansa ?</td><td>quand ?</td></tr>
+      <tr><td>Akoz ?</td><td>pourquoi ?</td></tr>
+      <tr><td>Konbien ?</td><td>combien ?</td></tr>
+    </table>
+    <div class="ex">Ousa ou rèt ? Akoz ou i plèr ?<i>Où habites-tu ? Pourquoi tu pleures ?</i></div>` }
+];
+
+function renderGram(){
+  app.innerHTML = `
+    <h2 style="margin-bottom:4px">Ti liv gramèr</h2>
+    <p class="soft" style="margin-bottom:14px">La grammaire du créole réunionnais, en clair. Les « Ti kour gramèr » du parcours t’entraînent dessus.</p>
+    ${GRAM_REF.map((g,i) => `
+      <div class="gram-card" id="gc${i}">
+        <button aria-expanded="false">${esc(g.t)} <span>＋</span></button>
+        <div class="g-body">${g.html}</div>
+      </div>`).join("")}`;
+  app.querySelectorAll(".gram-card > button").forEach(b => b.addEventListener("click", () => {
+    const c = b.parentElement;
+    const open = c.classList.toggle("open");
+    b.setAttribute("aria-expanded", open);
+    b.querySelector("span").textContent = open ? "－" : "＋";
+  }));
+}
+
+/* ============================================================
+   PROFIL
+   ============================================================ */
+function infoModal(emoji, title, text){
+  const ov = document.createElement("div");
+  ov.className = "overlay";
+  ov.innerHTML = `
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="m">${emoji}</div>
+      <h3>${esc(title)}</h3>
+      <p>${esc(text)}</p>
+      <div class="btns"><button class="btn-duo" id="ok">OK</button></div>
+    </div>`;
+  document.body.appendChild(ov);
+  ov.querySelector("#ok").addEventListener("click", () => ov.remove());
+}
+
+function renderProf(){
+  const lv = levelInfo();
+  const tot = state.stats.right + state.stats.wrong;
+  const acc = tot ? Math.round(100 * state.stats.right / tot) : 0;
+  app.innerHTML = `
+    <div class="prof-head">
+      <div class="av">🦎</div>
+      <div style="flex:1">
+        <h2>Niveau ${lv.n} · ${esc(lv.title)}</h2>
+        <div class="soft">${state.xp} XP${lv.next ? " · prochain niveau à " + lv.next + " XP" : " · niveau maximum !"}</div>
+        <div class="lvlbar"><span style="width:${lv.pct}%"></span></div>
+      </div>
+    </div>
+
+    <div class="statgrid">
+      <div class="statbox"><b>🔥 ${state.streak.count}</b><span>Série (jours)</span></div>
+      <div class="statbox"><b>⚡ ${state.xp}</b><span>XP total</span></div>
+      <div class="statbox"><b>📚 ${learnedCount()}</b><span>Mots maîtrisés</span></div>
+      <div class="statbox"><b>⭐ ${doneCount()}/${LESSONS.length}</b><span>Leçons finies</span></div>
+      <div class="statbox"><b>🎯 ${acc}%</b><span>Précision</span></div>
+    </div>
+
+    <div class="card">
+      <h3>🏅 Badges</h3>
+      <div class="badges">
+        ${BADGES.map(b => `
+          <div class="badge ${state.badges[b.id] ? "" : "locked"}">
+            <div class="b-e">${b.e}</div>
+            <div class="b-n">${esc(b.n)}</div>
+            <div class="b-d">${esc(b.d)}</div>
+          </div>`).join("")}
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>💾 Sauvegarde</h3>
+      <p class="soft">${
+        (typeof window !== "undefined" && window.storage) || HAS_LS
+          ? "Ta progression est enregistrée <b>automatiquement, après chaque réponse</b>" + (HAS_LS ? ", dans ce navigateur" : "") + ". Si tu fermes en pleine leçon, on te proposera de la reprendre au même endroit à ton retour."
+          : "⚠️ Aucune sauvegarde automatique n’est disponible ici : exporte ta progression dans un fichier avant de fermer, puis réimporte-le la prochaine fois."
+      }</p>
+      <p class="soft" style="margin-top:6px">Pour changer d’ordinateur ou garder une copie de secours, exporte un fichier de sauvegarde puis réimporte-le ailleurs.</p>
+      <button class="btn-duo blue wide" id="exp" style="margin-top:12px">⬇️ Exporter ma progression</button>
+      <button class="btn-duo white wide" id="impbtn" style="margin-top:10px">⬆️ Importer une sauvegarde</button>
+      <input type="file" id="impfile" accept=".json,application/json" style="display:none" aria-label="Fichier de sauvegarde">
+    </div>
+
+    <div class="card">
+      <h3>⚙️ Réglages</h3>
+      <div class="setrow">
+        <label for="goalsel">Objectif quotidien</label>
+        <select id="goalsel">
+          ${[10,20,30,50].map(g => `<option value="${g}" ${state.goal === g ? "selected" : ""}>${g} XP</option>`).join("")}
+        </select>
+      </div>
+      <div class="setrow">
+        <label>Effets sonores</label>
+        <button class="switch ${state.sound ? "on" : ""}" id="sw-sound" role="switch" aria-checked="${state.sound}" aria-label="Effets sonores"></button>
+      </div>
+      <div class="setrow">
+        <label>Voix (synthèse vocale)${TTS_SUPPORT ? "" : " — indisponible"}</label>
+        <button class="switch ${ttsOn() ? "on" : ""}" id="sw-tts" role="switch" aria-checked="${ttsOn()}" aria-label="Voix de synthèse" ${TTS_SUPPORT ? "" : "disabled"}></button>
+      </div>
+      <p class="soft" style="margin-top:10px">La voix utilise la synthèse française de ton navigateur : la prononciation créole est approximative, mais utile pour s’entraîner.</p>
+      <button class="btn-duo red wide" id="reset" style="margin-top:14px">Tout réinitialiser</button>
+    </div>`;
+
+  app.querySelector("#goalsel").addEventListener("change", e => { state.goal = Number(e.target.value); saveState(); });
+  app.querySelector("#sw-sound").addEventListener("click", () => { state.sound = !state.sound; saveState(); renderProf(); refreshStats(); });
+  const swt = app.querySelector("#sw-tts");
+  if (TTS_SUPPORT) swt.addEventListener("click", () => { state.tts = !state.tts; saveState(); renderProf(); if (state.tts) speak("Bonzour !"); });
+
+  app.querySelector("#exp").addEventListener("click", () => {
+    if (exportSave()) infoModal("💾","Sauvegarde exportée","Un fichier « ote-kreol-sauvegarde-….json » a été téléchargé. Garde-le précieusement : tu pourras le réimporter ici, sur n’importe quel ordinateur.");
+    else infoModal("😕","Oups","L’export n’a pas fonctionné sur ce navigateur.");
+  });
+  const impfile = app.querySelector("#impfile");
+  app.querySelector("#impbtn").addEventListener("click", () => impfile.click());
+  impfile.addEventListener("change", () => {
+    const f = impfile.files && impfile.files[0];
+    if (!f) return;
+    importSave(f, ok => {
+      if (ok){
+        refreshStats(); renderProf();
+        infoModal("✅","Sauvegarde importée","Nartrouv ! Ta progression a bien été restaurée : " + state.xp + " XP, " + doneCount() + " leçons finies.");
+      } else {
+        infoModal("😕","Fichier non reconnu","Ce fichier ne ressemble pas à une sauvegarde Oté ! Kréol. Vérifie que tu as choisi le bon fichier .json.");
+      }
+    });
+    impfile.value = "";
+  });
+
+  app.querySelector("#reset").addEventListener("click", () => {
+    const ov = document.createElement("div");
+    ov.className = "overlay";
+    ov.innerHTML = `
+      <div class="modal">
+        <div class="m">⚠️</div>
+        <h3>Tout réinitialiser ?</h3>
+        <p>XP, série, badges, progression : tout sera effacé. Cette action est définitive.</p>
+        <div class="btns">
+          <button class="btn-duo white" id="no">Annuler</button>
+          <button class="btn-duo red" id="yes">Oui, tout effacer</button>
+        </div>
+      </div>`;
+    document.body.appendChild(ov);
+    ov.querySelector("#no").addEventListener("click", () => ov.remove());
+    ov.querySelector("#yes").addEventListener("click", async () => {
+      await wipeSave();
+      ov.remove(); refreshStats(); goTab("path");
+    });
+  });
+}
+
+/* ---------------- Démarrage ---------------- */
+loadState().then(() => { refreshStats(); renderPath(); maybeResume(); });
+</script>
+</body>
+</html>
