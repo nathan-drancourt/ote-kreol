@@ -1,5 +1,7 @@
 # Oté ! Kréol
 
+![Aperçu du projet ote-kreol](docs/banner.png)
+
 Application web pour apprendre le créole réunionnais, en leçons courtes et ludiques.
 
 **Démo** : https://ot-nvthan1.vercel.app
